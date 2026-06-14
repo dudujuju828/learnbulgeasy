@@ -255,25 +255,45 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
   if (phase === 'heap-complete') {
     return (
       <div className="flex flex-col items-center px-4 py-8 gap-6">
-        <div className="text-center">
-          <div className="text-6xl mb-2">🏴‍☠️</div>
+        {/* Celebration header */}
+        <div className="text-center relative">
+          <div className="text-6xl mb-3 animate-bounce">🏆</div>
+          <div className="flex justify-center gap-1 mb-2">
+            {['⭐', '✨', '🌟', '✨', '⭐'].map((s, i) => (
+              <span key={i} className="text-lg" style={{ animationDelay: `${i * 100}ms` }}>{s}</span>
+            ))}
+          </div>
           <h2 className="text-2xl font-bold text-blue-900">Heap Complete!</h2>
           <p className="text-gray-500 mt-1 text-sm">
-            5 new words added to your dictionary
+            Both loops done — 5 words added to your dictionary!
           </p>
-          {saving && <p className="text-xs text-gray-400 mt-1">Saving progress…</p>}
+          {saving && <p className="text-xs text-gray-400 mt-2">Saving progress…</p>}
         </div>
 
+        {/* Words unlocked card */}
         <div className="w-full bg-white rounded-2xl shadow-md border border-blue-100 overflow-hidden">
-          <div className="bg-blue-900 px-4 py-2">
-            <p className="text-white font-semibold text-sm">{heap.name} — Words Unlocked</p>
+          <div className="bg-gradient-to-r from-blue-900 to-blue-700 px-4 py-3 flex items-center gap-2">
+            <span className="text-yellow-400 text-base">📖</span>
+            <div>
+              <p className="text-white font-semibold text-sm">{heap.name}</p>
+              <p className="text-blue-300 text-xs">5 words unlocked</p>
+            </div>
           </div>
           {heap.words.map((w) => (
             <div key={w.en} className="flex items-center justify-between px-4 py-3 border-b border-blue-50 last:border-0">
               <span className="text-gray-700 text-sm font-medium">{w.en}</span>
-              <div className="text-right">
-                <div className="text-blue-800 font-bold text-sm">{w.bg}</div>
-                {w.cyr && <div className="text-gray-400 text-xs">{w.cyr}</div>}
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-blue-800 font-bold text-sm">{w.bg}</div>
+                  {w.cyr && <div className="text-gray-400 text-xs">{w.cyr}</div>}
+                </div>
+                <button
+                  onClick={() => speak(w.bg, 'bg-BG')}
+                  className="text-base opacity-50 hover:opacity-90 transition-opacity leading-none"
+                  aria-label={`Speak ${w.bg}`}
+                >
+                  🔊
+                </button>
               </div>
             </div>
           ))}
@@ -289,8 +309,14 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
             </button>
           )}
           <button
+            onClick={() => router.push('/dictionary')}
+            className="w-full bg-blue-700 text-white rounded-2xl py-4 font-bold text-lg shadow-md active:scale-95 transition-transform"
+          >
+            📖 View Dictionary
+          </button>
+          <button
             onClick={() => router.push('/map')}
-            className="w-full bg-blue-900 text-white rounded-2xl py-4 font-bold text-lg shadow-md active:scale-95 transition-transform"
+            className="w-full bg-blue-900 text-white rounded-2xl py-3 font-semibold text-base shadow-md active:scale-95 transition-transform"
           >
             Back to Map
           </button>
