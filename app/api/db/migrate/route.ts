@@ -104,6 +104,31 @@ export async function POST(request: NextRequest) {
       )
     `
 
+    // Global word uniqueness: no Bulgarian (Cyrillic) word may appear in more
+    // than one heap. word_bg is the PRIMARY KEY, so the constraint is enforced
+    // at insert time by the seed endpoints.
+    await sql`
+      CREATE TABLE IF NOT EXISTS word_index (
+        word_bg TEXT PRIMARY KEY,
+        heap_id UUID NOT NULL REFERENCES heaps(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `
+
+    // Backfill the lookup table from existing heaps. One heap per word; any
+    // pre-existing duplicate words across heaps are collapsed to a single owner
+    // (existing data is left untouched — see /api/db/dedup-check for a report).
+    await sql`
+      INSERT INTO word_index (word_bg, heap_id)
+      SELECT w->>'bg' AS word_bg, MIN(h.id::text)::uuid AS heap_id
+      FROM heaps h
+      CROSS JOIN LATERAL jsonb_array_elements(h.words) w
+      GROUP BY w->>'bg'
+      ON CONFLICT (word_bg) DO NOTHING
+    `
+
+    await sql`CREATE INDEX IF NOT EXISTS idx_word_index_heap_id ON word_index(heap_id)`
+
     await sql`CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON user_progress(user_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_user_progress_heap_id ON user_progress(heap_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_dictionary_user_id ON dictionary(user_id)`

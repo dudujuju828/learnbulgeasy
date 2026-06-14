@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
+import { insertHeapsDeduped } from '@/lib/seed'
 
 const HEAPS = [
   {
@@ -147,14 +148,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Already seeded', count: parseInt(existing[0].count) })
     }
 
-    for (const heap of HEAPS) {
-      await sql`
-        INSERT INTO heaps (name, description, theme, "order", words, map_id)
-        VALUES (${heap.name}, ${heap.description}, ${heap.theme}, ${heap.order}, ${JSON.stringify(heap.words)}::jsonb, 1)
-      `
-    }
+    const { inserted, skipped, skippedWords } = await insertHeapsDeduped(sql, HEAPS, 1)
 
-    return NextResponse.json({ success: true, message: 'Seeded 10 heaps', count: HEAPS.length })
+    return NextResponse.json({
+      success: true,
+      message: `Seeded ${inserted} heaps (${skipped} duplicate words skipped)`,
+      count: inserted,
+      skipped,
+      skippedWords,
+    })
   } catch (err) {
     console.error('Seed error:', err)
     return NextResponse.json({ error: String(err) }, { status: 500 })

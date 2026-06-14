@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
+import { insertHeapsDeduped } from '@/lib/seed'
 
 // Map 3 — "The Summit": heaps 51–75, the climb up the volcanic island.
 const MAP3_HEAPS = [
@@ -350,14 +351,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Map 3 heaps already seeded', inserted: 0 })
     }
 
-    for (const heap of toInsert) {
-      await sql`
-        INSERT INTO heaps (name, description, theme, "order", words, map_id)
-        VALUES (${heap.name}, ${heap.description}, ${heap.theme}, ${heap.order}, ${JSON.stringify(heap.words)}::jsonb, 3)
-      `
-    }
+    const { inserted, skipped, skippedWords } = await insertHeapsDeduped(sql, toInsert, 3)
 
-    return NextResponse.json({ success: true, message: `Seeded ${toInsert.length} Map 3 heaps`, inserted: toInsert.length })
+    return NextResponse.json({
+      success: true,
+      message: `Seeded ${inserted} Map 3 heaps (${skipped} duplicate words skipped)`,
+      inserted,
+      skipped,
+      skippedWords,
+    })
   } catch (err) {
     console.error('Seed-map3 error:', err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
