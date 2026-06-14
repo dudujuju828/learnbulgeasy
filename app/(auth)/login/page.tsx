@@ -60,6 +60,7 @@ export default function LoginPage() {
               onChange={e => setEmail(e.target.value)}
               required
               autoComplete="email"
+              enterKeyHint="next"
               className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
@@ -75,6 +76,7 @@ export default function LoginPage() {
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="current-password"
+              enterKeyHint="go"
               className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
@@ -91,7 +93,7 @@ export default function LoginPage() {
         </form>
         <p className="text-center text-sm text-blue-400 mt-5">
           New crew member?{' '}
-          <Link href="/signup" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors">
+          <Link href="/signup" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors inline-block py-3">
             Join the voyage
           </Link>
         </p>

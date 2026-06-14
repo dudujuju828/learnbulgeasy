@@ -72,6 +72,7 @@ export default function SignupPage() {
               onChange={e => setEmail(e.target.value)}
               required
               autoComplete="email"
+              enterKeyHint="next"
               className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
@@ -87,6 +88,7 @@ export default function SignupPage() {
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="new-password"
+              enterKeyHint="next"
               className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
@@ -102,6 +104,7 @@ export default function SignupPage() {
               onChange={e => setConfirm(e.target.value)}
               required
               autoComplete="new-password"
+              enterKeyHint="go"
               className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
@@ -118,7 +121,7 @@ export default function SignupPage() {
         </form>
         <p className="text-center text-sm text-blue-400 mt-5">
           Already have an account?{' '}
-          <Link href="/login" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors">
+          <Link href="/login" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors inline-block py-3">
             Sign in
           </Link>
         </p>
