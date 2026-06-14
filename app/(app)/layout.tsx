@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
 import NavBar from '@/components/NavBar'
+import OnlineStatus from '@/components/OnlineStatus'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +11,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <span className="text-2xl">🏴‍☠️</span>
           <span className="font-pirata text-xl text-yellow-300 tracking-wide">LearnBulgEasy</span>
         </Link>
-        <LogoutButton />
+        <div className="flex items-center gap-2">
+          <OnlineStatus />
+          <LogoutButton />
+        </div>
       </header>
       <main className="flex-1 overflow-y-auto scroll-smooth">
         {children}

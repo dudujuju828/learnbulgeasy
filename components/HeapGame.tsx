@@ -76,19 +76,27 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
 
   const saveProgress = useCallback(async (loops: number, attempts: number, streak: number, done: boolean) => {
     setSaving(true)
+    const data = {
+      loops_completed: loops,
+      total_attempts: attempts,
+      best_streak: streak,
+      completed: done,
+    }
     try {
-      await fetch(`/api/heaps/${heap.id}/progress`, {
+      const res = await fetch(`/api/heaps/${heap.id}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          loops_completed: loops,
-          total_attempts: attempts,
-          best_streak: streak,
-          completed: done,
-        }),
+        body: JSON.stringify(data),
       })
-    } catch (err) {
-      console.error('Failed to save progress:', err)
+      if (!res.ok) throw new Error('Server error')
+    } catch {
+      // Offline or error — queue for sync when back online
+      try {
+        const { queueProgressSync } = await import('@/lib/idb')
+        await queueProgressSync(heap.id, data)
+      } catch {
+        // IDB unavailable — progress lost for this session
+      }
     } finally {
       setSaving(false)
     }

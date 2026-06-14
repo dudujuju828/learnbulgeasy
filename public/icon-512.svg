@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#060d1f"/>
+  <!-- Anchor shackle ring -->
+  <circle cx="256" cy="102" r="38" fill="none" stroke="#f59e0b" stroke-width="22"/>
+  <!-- Shank (vertical bar) -->
+  <rect x="245" y="134" width="22" height="266" rx="11" fill="#f59e0b"/>
+  <!-- Stock (horizontal crossbar) -->
+  <rect x="138" y="202" width="236" height="22" rx="11" fill="#f59e0b"/>
+  <!-- Left arm -->
+  <path d="M247 396 C244 396 160 387 134 320" fill="none" stroke="#f59e0b" stroke-width="22" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <path d="M265 396 C268 396 352 387 378 320" fill="none" stroke="#f59e0b" stroke-width="22" stroke-linecap="round"/>
+  <!-- Left fluke tip -->
+  <circle cx="134" cy="320" r="22" fill="#f59e0b"/>
+  <!-- Right fluke tip -->
+  <circle cx="378" cy="320" r="22" fill="#f59e0b"/>
+</svg>

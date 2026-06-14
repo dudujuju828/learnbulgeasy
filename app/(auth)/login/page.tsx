@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { usePWA } from '@/components/PWAProvider'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -10,6 +11,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [installed, setInstalled] = useState(false)
+  const { canInstall, install } = usePWA()
+
+  async function handleInstall() {
+    const accepted = await install()
+    if (accepted) setInstalled(true)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -98,6 +106,23 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
+
+      {/* Install App prompt */}
+      {canInstall && !installed && (
+        <button
+          type="button"
+          onClick={handleInstall}
+          className="mt-4 w-full flex items-center justify-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors py-3 rounded-2xl border border-blue-700/30 bg-blue-950/40 active:scale-95"
+        >
+          <span>📲</span>
+          Install App — play offline anytime
+        </button>
+      )}
+      {installed && (
+        <p className="mt-4 text-center text-sm text-green-400">
+          ✓ Added to home screen!
+        </p>
+      )}
     </div>
   )
 }
