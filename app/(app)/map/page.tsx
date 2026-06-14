@@ -45,119 +45,160 @@ export default async function MapPage() {
     // DB not configured — show empty state
   }
 
+  // Consecutive completed heaps from the start = streak
+  let streak = 0
+  for (const { progress } of heapsWithProgress) {
+    if (progress?.completed) streak++
+    else break
+  }
+
+  const completedCount = heapsWithProgress.filter(h => h.progress?.completed).length
+  // Index of the current heap (first unlocked, not completed)
+  const currentIndex = heapsWithProgress.findIndex(h => h.unlocked && !h.progress?.completed)
+
   return (
-    <div className="flex flex-col px-4 py-6 gap-4">
+    <div className="min-h-full bg-gradient-to-b from-blue-950 via-blue-900 to-blue-800 pb-8">
       {/* Header */}
-      <div className="text-center">
-        <div className="text-5xl mb-2">🗺️</div>
-        <h1 className="text-2xl font-bold text-blue-900">Your Voyage Map</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Complete heaps to unlock more words
-        </p>
+      <div className="px-4 pt-6 pb-3 text-center">
+        <div className="text-4xl mb-1">🧭</div>
+        <h1 className="text-2xl font-bold text-yellow-300 tracking-wide">Voyage Map</h1>
+        <p className="text-blue-300 text-sm mt-0.5">Navigate the seas of Bulgarian</p>
+
+        {streak > 0 && (
+          <div className="inline-flex items-center gap-1.5 mt-3 bg-yellow-400 text-yellow-900 px-4 py-1.5 rounded-full text-sm font-bold shadow-lg shadow-yellow-900/30">
+            <span>🔥</span>
+            <span>{streak} heap{streak !== 1 ? 's' : ''} in a row!</span>
+          </div>
+        )}
+      </div>
+
+      {/* Wave divider */}
+      <div className="text-blue-600 text-center text-xl leading-none px-4 mb-5 select-none opacity-60">
+        ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈
       </div>
 
       {heapsWithProgress.length === 0 ? (
-        <div className="w-full bg-white rounded-2xl shadow-md p-6 text-center border border-blue-100">
-          <div className="text-4xl mb-3">🌊</div>
-          <h2 className="text-lg font-semibold text-blue-800 mb-2">Voyage not yet charted</h2>
-          <p className="text-sm text-gray-500">
-            Database not connected. Deploy to Vercel and run migrations to begin.
+        <div className="mx-4 bg-blue-800/40 rounded-2xl p-6 text-center border border-blue-600/50 backdrop-blur-sm">
+          <div className="text-4xl mb-3">⚓</div>
+          <h2 className="text-lg font-semibold text-yellow-300 mb-2">Voyage not yet charted</h2>
+          <p className="text-sm text-blue-300">
+            Database not connected. Deploy to Vercel and run migrations to begin your journey.
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {heapsWithProgress.map(({ heap, progress, unlocked }, index) => {
-            const completed = progress?.completed === true
-            const inProgress = !completed && (progress?.loops_completed ?? 0) > 0
-            const emoji = THEME_EMOJI[heap.theme] ?? '📦'
+        <div className="relative px-4">
+          {/* Dashed rope path down the left */}
+          <div className="absolute left-[36px] top-0 bottom-0 w-0.5 border-l-2 border-dashed border-yellow-500/30 z-0" />
 
-            return (
-              <div key={heap.id} className="flex items-stretch gap-3">
-                {/* Timeline connector */}
-                <div className="flex flex-col items-center w-8 shrink-0">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow shrink-0 ${
-                    completed ? 'bg-green-500 text-white' :
-                    unlocked ? 'bg-blue-900 text-white' :
-                    'bg-gray-200 text-gray-400'
-                  }`}>
-                    {completed ? '✓' : index + 1}
-                  </div>
-                  {index < heapsWithProgress.length - 1 && (
-                    <div className={`w-0.5 flex-1 mt-1 ${completed ? 'bg-green-300' : 'bg-gray-200'}`} />
-                  )}
-                </div>
+          <div className="flex flex-col gap-0">
+            {heapsWithProgress.map(({ heap, progress, unlocked }, index) => {
+              const completed = progress?.completed === true
+              const inProgress = !completed && (progress?.loops_completed ?? 0) > 0
+              const isCurrent = index === currentIndex
+              const emoji = THEME_EMOJI[heap.theme] ?? '📦'
 
-                {/* Heap card */}
-                {unlocked ? (
-                  <Link
-                    href={`/heap/${heap.id}`}
-                    className={`flex-1 rounded-2xl p-4 border flex items-center gap-3 active:scale-95 transition-transform mb-3 ${
+              return (
+                <div key={heap.id} className="relative flex items-start gap-3 pb-3">
+                  {/* Node marker */}
+                  <div className="relative z-10 flex flex-col items-center w-9 pt-0.5 shrink-0">
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-base shadow-lg border-2 transition-all ${
                       completed
-                        ? 'bg-green-50 border-green-200'
-                        : inProgress
-                        ? 'bg-yellow-50 border-yellow-200'
-                        : 'bg-white border-blue-100 shadow-sm'
-                    }`}
-                  >
-                    <span className="text-3xl">{emoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-blue-900 text-sm leading-tight">{heap.name}</p>
-                      {heap.description && (
-                        <p className="text-xs text-gray-400 mt-0.5 truncate">{heap.description}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1.5">
-                        {completed && (
-                          <span className="text-xs text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full font-medium">
-                            ✓ Complete
-                          </span>
+                        ? 'bg-yellow-400 border-yellow-300 shadow-yellow-500/30'
+                        : isCurrent
+                        ? 'bg-blue-400 border-blue-200 shadow-blue-400/40 ring-2 ring-blue-300/50 ring-offset-1 ring-offset-blue-900'
+                        : unlocked
+                        ? 'bg-blue-700 border-blue-500'
+                        : 'bg-blue-950 border-blue-800'
+                    }`}>
+                      <span className="text-sm leading-none">
+                        {completed ? '⭐' : isCurrent ? '🚢' : unlocked ? '⚓' : '🔒'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Heap card */}
+                  {unlocked ? (
+                    <Link
+                      href={`/heap/${heap.id}`}
+                      className={`flex-1 rounded-2xl p-3.5 border flex items-center gap-3 active:scale-95 transition-all ${
+                        completed
+                          ? 'bg-yellow-400/10 border-yellow-500/30'
+                          : isCurrent
+                          ? 'bg-blue-500/20 border-blue-400/50 shadow-lg shadow-blue-900/40'
+                          : 'bg-blue-800/30 border-blue-600/30'
+                      }`}
+                    >
+                      <span className={`text-2xl shrink-0 ${!completed && !isCurrent ? 'opacity-60' : ''}`}>
+                        {emoji}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-semibold text-sm leading-tight ${
+                          completed ? 'text-yellow-300'
+                          : isCurrent ? 'text-white'
+                          : 'text-blue-200'
+                        }`}>
+                          {heap.name}
+                        </p>
+                        {heap.description && (
+                          <p className="text-xs text-blue-400/80 mt-0.5 truncate">{heap.description}</p>
                         )}
-                        {inProgress && (
-                          <span className="text-xs text-yellow-700 bg-yellow-100 px-1.5 py-0.5 rounded-full font-medium">
-                            Loop {progress!.loops_completed}/2 done
-                          </span>
-                        )}
-                        {!completed && !inProgress && (
-                          <span className="text-xs text-blue-600 font-medium">5 words · 2 loops</span>
-                        )}
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                          {completed && (
+                            <span className="text-xs text-yellow-400 bg-yellow-400/10 border border-yellow-500/30 px-2 py-0.5 rounded-full font-medium">
+                              ✓ Complete
+                            </span>
+                          )}
+                          {inProgress && (
+                            <span className="text-xs text-blue-300 bg-blue-400/15 border border-blue-400/30 px-2 py-0.5 rounded-full font-medium">
+                              Loop {progress!.loops_completed}/2
+                            </span>
+                          )}
+                          {isCurrent && !inProgress && (
+                            <span className="text-xs text-blue-200 bg-blue-400/15 border border-blue-300/30 px-2 py-0.5 rounded-full font-medium">
+                              ▶ Next stop
+                            </span>
+                          )}
+                          {!completed && !inProgress && !isCurrent && (
+                            <span className="text-xs text-blue-500 font-medium">5 words · 2 loops</span>
+                          )}
+                        </div>
+                      </div>
+                      <span className={`text-lg shrink-0 ${completed ? 'text-yellow-400' : 'text-blue-500'}`}>›</span>
+                    </Link>
+                  ) : (
+                    <div className="flex-1 rounded-2xl p-3.5 border bg-blue-950/50 border-blue-800/40 flex items-center gap-3 opacity-40">
+                      <span className="text-2xl grayscale">🔒</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-blue-400 text-sm">{heap.name}</p>
+                        <p className="text-xs text-blue-600 mt-0.5">Complete previous heap to unlock</p>
                       </div>
                     </div>
-                    <span className="text-gray-300 text-lg">›</span>
-                  </Link>
-                ) : (
-                  <div className="flex-1 rounded-2xl p-4 border bg-gray-50 border-gray-200 flex items-center gap-3 mb-3 opacity-60">
-                    <span className="text-3xl grayscale">🔒</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-400 text-sm">{heap.name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Complete the previous heap to unlock</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 
-      {/* Stats footer */}
+      {/* Stats bar */}
       {heapsWithProgress.length > 0 && (
-        <div className="flex justify-around py-3 bg-blue-50 rounded-2xl border border-blue-100">
-          <div className="text-center">
-            <p className="text-xl font-bold text-blue-900">
-              {heapsWithProgress.filter(h => h.progress?.completed).length}
-            </p>
-            <p className="text-xs text-gray-500">Heaps done</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-blue-900">
-              {heapsWithProgress.filter(h => h.progress?.completed).length * 5}
-            </p>
-            <p className="text-xs text-gray-500">Words learned</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-blue-900">
-              {heapsWithProgress.length - heapsWithProgress.filter(h => h.progress?.completed).length}
-            </p>
-            <p className="text-xs text-gray-500">Remaining</p>
+        <div className="mx-4 mt-4">
+          <div className="flex justify-around py-4 bg-blue-950/60 rounded-2xl border border-blue-700/40 backdrop-blur-sm">
+            <div className="text-center">
+              <p className="text-xl font-bold text-yellow-300">{completedCount}</p>
+              <p className="text-xs text-blue-400 mt-0.5">Heaps done</p>
+            </div>
+            <div className="w-px bg-blue-700/50" />
+            <div className="text-center">
+              <p className="text-xl font-bold text-yellow-300">{completedCount * 5}</p>
+              <p className="text-xs text-blue-400 mt-0.5">Words learned</p>
+            </div>
+            <div className="w-px bg-blue-700/50" />
+            <div className="text-center">
+              <p className="text-xl font-bold text-yellow-300">{streak > 0 ? `🔥${streak}` : '—'}</p>
+              <p className="text-xs text-blue-400 mt-0.5">Streak</p>
+            </div>
           </div>
         </div>
       )}

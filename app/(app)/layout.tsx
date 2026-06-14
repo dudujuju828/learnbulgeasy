@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import LogoutButton from '@/components/LogoutButton'
+import NavBar from '@/components/NavBar'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,32 +12,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Link>
         <LogoutButton />
       </header>
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto scroll-smooth">
         {children}
       </main>
-      <nav className="flex border-t border-blue-200 bg-white sticky bottom-0 z-50">
-        <Link
-          href="/map"
-          className="flex-1 flex flex-col items-center py-3 text-xs gap-1 text-blue-700 font-medium hover:bg-blue-50 transition-colors"
-        >
-          <span className="text-xl">🗺️</span>
-          <span>Map</span>
-        </Link>
-        <Link
-          href="/dictionary"
-          className="flex-1 flex flex-col items-center py-3 text-xs gap-1 text-gray-400 font-medium hover:bg-blue-50 transition-colors"
-        >
-          <span className="text-xl">📖</span>
-          <span>Dictionary</span>
-        </Link>
-        <Link
-          href="/profile"
-          className="flex-1 flex flex-col items-center py-3 text-xs gap-1 text-gray-400 font-medium hover:bg-blue-50 transition-colors"
-        >
-          <span className="text-xl">👤</span>
-          <span>Profile</span>
-        </Link>
-      </nav>
+      <NavBar />
     </div>
   )
 }

@@ -6,7 +6,7 @@ const SECRET = new TextEncoder().encode(
 )
 
 const AUTH_PAGES = ['/login', '/signup']
-const PUBLIC_API = '/api/auth'
+const PUBLIC_API_PATTERNS = ['/api/auth', '/api/db']
 
 async function isValidToken(token: string): Promise<boolean> {
   try {
@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const token = request.cookies.get('auth_token')?.value
 
-  if (pathname.startsWith(PUBLIC_API)) return NextResponse.next()
+  if (PUBLIC_API_PATTERNS.some(pattern => pathname.startsWith(pattern))) return NextResponse.next()
 
   const isAuthPage = AUTH_PAGES.includes(pathname)
 
