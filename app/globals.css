@@ -128,6 +128,10 @@
   html {
     @apply font-sans;
   }
+  /* Eliminate 300ms tap delay on Android Chrome */
+  button, a, input, textarea, select, [role="button"] {
+    touch-action: manipulation;
+  }
 }
 
 /* Pirate font utility */
@@ -146,14 +150,15 @@
   50% { transform: translateY(-6px); }
 }
 
+/* GPU-composited glow: transform+opacity instead of box-shadow (avoids repaint) */
 @keyframes treasure-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(251,191,36,0.4), 0 0 0 0 rgba(251,191,36,0.2); }
-  50% { box-shadow: 0 0 20px rgba(251,191,36,0.7), 0 0 0 6px rgba(251,191,36,0); }
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50% { transform: scale(1.07); opacity: 1; }
 }
 
 @keyframes current-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(147,197,253,0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(147,197,253,0); }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  70% { transform: scale(1.12); opacity: 0.75; }
 }
 
 @keyframes sparkle-in {
@@ -168,9 +173,33 @@
   100% { background-color: rgb(240, 253, 244); }
 }
 
-.animate-wave { animation: wave-scroll 8s linear infinite; }
-.animate-float { animation: float 3s ease-in-out infinite; }
-.animate-treasure-glow { animation: treasure-glow 2s ease-in-out infinite; }
-.animate-current-pulse { animation: current-pulse 1.8s ease-out infinite; }
-.animate-sparkle { animation: sparkle-in 0.4s ease-out forwards; }
+/* will-change pre-promotes elements to GPU compositor layers before animation starts */
+.animate-wave { animation: wave-scroll 8s linear infinite; will-change: transform; }
+.animate-float { animation: float 3s ease-in-out infinite; will-change: transform; }
+.animate-treasure-glow { animation: treasure-glow 2s ease-in-out infinite; will-change: transform, opacity; }
+.animate-current-pulse { animation: current-pulse 1.8s ease-out infinite; will-change: transform, opacity; }
+.animate-sparkle { animation: sparkle-in 0.4s ease-out forwards; will-change: transform, opacity; }
 .animate-correct-flash { animation: correct-flash 0.6s ease-out; }
+
+/* Disable non-essential animations for battery saver / accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-wave,
+  .animate-float,
+  .animate-treasure-glow,
+  .animate-current-pulse {
+    animation: none;
+    will-change: auto;
+  }
+  .animate-sparkle {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+  .animate-correct-flash {
+    animation: none;
+  }
+  .animate-bounce {
+    animation: none !important;
+  }
+}

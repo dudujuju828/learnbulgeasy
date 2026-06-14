@@ -16,6 +16,9 @@ const pirataOne = Pirata_One({
 export const metadata: Metadata = {
   title: "LearnBulgEasy",
   description: "Learn Bulgarian vocabulary with a pirate adventure",
+  other: {
+    "theme-color": "#060d1f",
+  },
 };
 
 export const viewport: Viewport = {

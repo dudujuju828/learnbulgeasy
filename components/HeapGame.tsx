@@ -53,11 +53,21 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
     window.speechSynthesis.speak(utt)
   }, [])
 
+  const vibrate = useCallback((pattern: number | number[]) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(pattern)
+    }
+  }, [])
+
   useEffect(() => {
     if (phase === 'playing' && inputRef.current) {
       inputRef.current.focus()
     }
   }, [phase, wordIndex])
+
+  useEffect(() => {
+    if (phase === 'heap-complete') vibrate([50, 50, 100])
+  }, [phase, vibrate])
 
   useEffect(() => {
     if (phase !== 'playing') return
@@ -123,6 +133,8 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
       ? matchesAnswer(answer, word.bg, word.cyr)
       : matchesEnAnswer(answer, word.en)
 
+    vibrate(isCorrect ? 8 : [15, 40, 15])
+
     const newConsecutive = isCorrect ? consecutive + 1 : 0
     const newStreak = isCorrect ? currentStreak + 1 : 0
     const newMaxStreak = Math.max(maxStreak, newStreak)
@@ -144,7 +156,7 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
     }
 
     setPhase('feedback')
-  }, [answer, phase, mode, word, consecutive, currentStreak, maxStreak, totalAttempts, correctAnswer, currentLoop, wordIndex])
+  }, [answer, phase, mode, word, consecutive, currentStreak, maxStreak, totalAttempts, correctAnswer, currentLoop, wordIndex, vibrate])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSubmit(e as unknown as React.FormEvent)
@@ -420,6 +432,7 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
           onChange={e => setAnswer(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={mode === 'en-bg' ? 'Type in Bulgarian (Cyrillic or hlyab)…' : 'Type in English…'}
+          enterKeyHint="done"
           disabled={phase !== 'playing'}
           className="w-full bg-blue-950/80 border-2 border-blue-700/50 text-white placeholder-blue-600 rounded-2xl px-4 py-4 text-lg focus:outline-none focus:border-yellow-500/50 disabled:opacity-40 min-h-[56px]"
           autoComplete="off"
