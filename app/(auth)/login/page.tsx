@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full">
       {/* Header */}
       <div className="text-center mb-6">
         <div className="text-6xl mb-3 animate-float inline-block">⚓</div>
