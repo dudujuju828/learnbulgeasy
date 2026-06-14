@@ -7,6 +7,7 @@ export interface User {
 export interface HeapWord {
   en: string
   bg: string
+  cyr?: string  // Latin transliteration (e.g., "hlyab" for "хляб")
 }
 
 export interface Heap {
