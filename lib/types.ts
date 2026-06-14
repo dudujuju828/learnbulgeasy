@@ -16,7 +16,17 @@ export interface Heap {
   description: string | null
   theme: string
   order: number
+  map_id: number
   words: HeapWord[]
+  created_at: string
+}
+
+export interface GameMap {
+  id: number
+  name: string
+  theme: string
+  order_index: number
+  description: string | null
   created_at: string
 }
 

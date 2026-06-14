@@ -25,16 +25,21 @@ export async function POST(
   try {
     const sql = getDb()
 
+    // Which map does this heap belong to? (for resume-on-last-map)
+    const heapRows = await sql`SELECT map_id FROM heaps WHERE id = ${id}` as { map_id: number | null }[]
+    const mapId = heapRows[0]?.map_id ?? 1
+
     // Upsert user_progress
     const updated = await sql`
-      INSERT INTO user_progress (user_id, heap_id, completed, loops_completed, last_played, total_attempts, best_streak)
-      VALUES (${session.userId}, ${id}, ${completed}, ${loops_completed}, NOW(), ${total_attempts}, ${best_streak})
+      INSERT INTO user_progress (user_id, heap_id, completed, loops_completed, last_played, total_attempts, best_streak, current_map_id)
+      VALUES (${session.userId}, ${id}, ${completed}, ${loops_completed}, NOW(), ${total_attempts}, ${best_streak}, ${mapId})
       ON CONFLICT (user_id, heap_id) DO UPDATE SET
         completed = GREATEST(user_progress.completed::int, EXCLUDED.completed::int)::boolean,
         loops_completed = GREATEST(user_progress.loops_completed, EXCLUDED.loops_completed),
         last_played = NOW(),
         total_attempts = user_progress.total_attempts + EXCLUDED.total_attempts,
-        best_streak = GREATEST(user_progress.best_streak, EXCLUDED.best_streak)
+        best_streak = GREATEST(user_progress.best_streak, EXCLUDED.best_streak),
+        current_map_id = EXCLUDED.current_map_id
       RETURNING id, user_id, heap_id, completed, loops_completed, last_played, total_attempts, best_streak, created_at
     ` as UserProgress[]
 

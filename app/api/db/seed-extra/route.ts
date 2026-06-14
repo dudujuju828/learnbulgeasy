@@ -221,8 +221,8 @@ export async function POST(request: NextRequest) {
 
     for (const heap of toInsert) {
       await sql`
-        INSERT INTO heaps (name, description, theme, "order", words)
-        VALUES (${heap.name}, ${heap.description}, ${heap.theme}, ${heap.order}, ${JSON.stringify(heap.words)}::jsonb)
+        INSERT INTO heaps (name, description, theme, "order", words, map_id)
+        VALUES (${heap.name}, ${heap.description}, ${heap.theme}, ${heap.order}, ${JSON.stringify(heap.words)}::jsonb, 1)
       `
     }
 

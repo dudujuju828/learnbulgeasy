@@ -18,7 +18,7 @@ export async function GET(
     const sql = getDb()
 
     const heaps = await sql`
-      SELECT id, name, description, theme, "order", words, created_at
+      SELECT id, name, description, theme, "order", map_id, words, created_at
       FROM heaps WHERE id = ${id}
     ` as Heap[]
 

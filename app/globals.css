@@ -187,6 +187,24 @@
   100% { transform: scale(1); }
 }
 
+/* Map 2 — Pirate's Passage: drifting mist banks */
+@keyframes fog-drift {
+  0% { transform: translateX(-25%); }
+  100% { transform: translateX(25%); }
+}
+
+.map-fog {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 220px;
+  background: radial-gradient(ellipse at center, rgba(94, 234, 212, 0.12) 0%, rgba(94, 234, 212, 0) 70%);
+  will-change: transform;
+  pointer-events: none;
+}
+.map-fog-1 { top: 12%; animation: fog-drift 18s ease-in-out infinite alternate; }
+.map-fog-2 { top: 55%; animation: fog-drift 26s ease-in-out infinite alternate-reverse; }
+
 /* will-change pre-promotes elements to GPU compositor layers before animation starts */
 .animate-wave { animation: wave-scroll 8s linear infinite; will-change: transform; }
 .animate-float { animation: float 3s ease-in-out infinite; will-change: transform; }
@@ -202,7 +220,8 @@
   .animate-wave,
   .animate-float,
   .animate-treasure-glow,
-  .animate-current-pulse {
+  .animate-current-pulse,
+  .map-fog {
     animation: none;
     will-change: auto;
   }
