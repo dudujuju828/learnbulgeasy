@@ -3,10 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -53,17 +49,22 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="w-full max-w-sm shadow-2xl border-0">
-      <CardHeader className="text-center pb-2">
-        <div className="text-5xl mb-2">🏴‍☠️</div>
-        <CardTitle className="text-2xl font-bold text-blue-900">Join the Crew</CardTitle>
-        <CardDescription className="text-base">Create your Bulgarian learning voyage</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className="w-full max-w-sm">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="text-6xl mb-3 animate-float inline-block">🏴‍☠️</div>
+        <h1 className="font-pirata text-4xl text-yellow-300 tracking-wide">Join the Crew</h1>
+        <p className="text-blue-300 text-base mt-1">Create your Bulgarian learning voyage</p>
+      </div>
+
+      {/* Card */}
+      <div className="bg-blue-950/70 rounded-3xl p-6 border border-blue-700/30 shadow-2xl backdrop-blur-sm">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
-            <Input
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
+              Email
+            </label>
+            <input
               id="email"
               type="email"
               placeholder="you@example.com"
@@ -71,11 +72,14 @@ export default function SignupPage() {
               onChange={e => setEmail(e.target.value)}
               required
               autoComplete="email"
+              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="password">Password</Label>
-            <Input
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
+              Password
+            </label>
+            <input
               id="password"
               type="password"
               placeholder="8+ characters"
@@ -83,11 +87,14 @@ export default function SignupPage() {
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="new-password"
+              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="confirm">Confirm Password</Label>
-            <Input
+          <div className="space-y-1.5">
+            <label htmlFor="confirm" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
+              Confirm Password
+            </label>
+            <input
               id="confirm"
               type="password"
               placeholder="••••••••"
@@ -95,26 +102,27 @@ export default function SignupPage() {
               onChange={e => setConfirm(e.target.value)}
               required
               autoComplete="new-password"
+              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
             />
           </div>
           {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
+            <p className="text-sm text-red-400 text-center bg-red-900/20 border border-red-700/30 rounded-xl py-2">{error}</p>
           )}
-          <Button
+          <button
             type="submit"
-            className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold"
             disabled={loading}
+            className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 font-bold rounded-xl py-3.5 text-base active:scale-95 transition-transform disabled:opacity-50 min-h-[52px]"
           >
-            {loading ? 'Creating account...' : 'Join the Voyage →'}
-          </Button>
+            {loading ? 'Signing up…' : '⚔️ Join the Voyage →'}
+          </button>
         </form>
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm text-blue-400 mt-5">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 font-medium hover:underline">
+          <Link href="/login" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors">
             Sign in
           </Link>
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

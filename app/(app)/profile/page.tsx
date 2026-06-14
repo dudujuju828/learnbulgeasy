@@ -38,52 +38,52 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center px-4 py-8 gap-4">
-      <div className="text-6xl">🏴‍☠️</div>
-      <h1 className="text-2xl font-bold text-blue-900">Your Profile</h1>
+    <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col items-center px-4 py-8 gap-5">
+      <div className="text-center">
+        <div className="text-6xl mb-2 animate-float inline-block">🏴‍☠️</div>
+        <h1 className="font-pirata text-4xl text-yellow-300 tracking-wide">Captain&apos;s Quarters</h1>
+        {user && (
+          <p className="text-blue-300 text-sm mt-1">{user.email}</p>
+        )}
+      </div>
 
       {user && (
-        <div className="w-full bg-white rounded-2xl shadow-md p-4 border border-blue-100 space-y-3">
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Email</p>
-            <p className="text-sm font-medium text-gray-800">{user.email}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Member since</p>
-            <p className="text-sm font-medium text-gray-800">
-              {new Date(user.created_at).toLocaleDateString()}
-            </p>
-          </div>
+        <div className="w-full bg-blue-950/60 rounded-2xl border border-blue-700/30 p-4">
+          <p className="text-xs text-yellow-400/60 uppercase tracking-wider font-semibold mb-2">⚓ Voyage started</p>
+          <p className="text-blue-200 text-sm font-medium">
+            {new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
         </div>
       )}
 
-      <div className="w-full bg-white rounded-2xl shadow-md p-4 border border-blue-100">
-        <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-3">Stats</p>
+      {/* Stats */}
+      <div className="w-full bg-blue-950/60 rounded-2xl border border-blue-700/30 p-4">
+        <p className="text-xs text-yellow-400/60 uppercase tracking-wider font-semibold mb-4">📊 Voyage Log</p>
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-blue-50 rounded-xl p-3">
-            <p className="text-2xl font-bold text-blue-900">{heapsCompleted}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Heaps done</p>
+          <div className="bg-blue-900/50 rounded-xl p-3 border border-blue-700/25">
+            <p className="text-2xl font-bold text-yellow-300">{heapsCompleted}</p>
+            <p className="text-xs text-blue-400 mt-0.5">🏝️ Islands</p>
           </div>
-          <div className="bg-yellow-50 rounded-xl p-3">
-            <p className="text-2xl font-bold text-yellow-700">{wordsLearned}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Words learned</p>
+          <div className="bg-amber-900/30 rounded-xl p-3 border border-yellow-700/20">
+            <p className="text-2xl font-bold text-yellow-300">{wordsLearned}</p>
+            <p className="text-xs text-blue-400 mt-0.5">💰 Words</p>
           </div>
-          <div className="bg-green-50 rounded-xl p-3">
-            <p className="text-2xl font-bold text-green-700">{bestStreak}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Best streak</p>
+          <div className="bg-blue-900/50 rounded-xl p-3 border border-blue-700/25">
+            <p className="text-2xl font-bold text-yellow-300">{bestStreak}</p>
+            <p className="text-xs text-blue-400 mt-0.5">🔥 Best run</p>
           </div>
         </div>
         {totalAttempts > 0 && (
-          <p className="text-xs text-gray-400 text-center mt-3">
-            {totalAttempts} total answers submitted
+          <p className="text-xs text-blue-500 text-center mt-4">
+            ⚔️ {totalAttempts} battles fought
           </p>
         )}
       </div>
 
       {heapsCompleted === 0 && (
-        <div className="w-full bg-yellow-50 rounded-2xl p-4 border border-yellow-200 text-center">
-          <p className="text-yellow-800 text-sm font-medium">Start on the Map to complete your first heap!</p>
-          <p className="text-yellow-600 text-xs mt-1">Complete a heap twice to unlock words</p>
+        <div className="w-full bg-amber-900/20 rounded-2xl p-4 border border-yellow-700/20 text-center">
+          <p className="text-yellow-300 text-sm font-medium">Set sail on the Map to conquer your first island!</p>
+          <p className="text-blue-400 text-xs mt-1">Complete a heap twice to unlock words</p>
         </div>
       )}
     </div>
