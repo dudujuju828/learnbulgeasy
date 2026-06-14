@@ -1,17 +1,6 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "env": {
-    "DATABASE_URL": {
-      "description": "Vercel Postgres connection string"
-    },
-    "JWT_SECRET": {
-      "description": "32-byte random secret for JWT signing"
-    },
-    "MIGRATION_SECRET": {
-      "description": "Secret to protect migration endpoint"
-    }
-  },
   "framework": "nextjs",
   "outputDirectory": ".next"
 }
