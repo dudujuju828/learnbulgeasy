@@ -68,18 +68,17 @@ export default function InfiniteLoader() {
 
   if (status === 'empty') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#1a0b2e] via-indigo-950 to-blue-950 flex flex-col items-center justify-center px-8 py-12 gap-5 text-center">
-        <div className="text-6xl animate-float inline-block">⚡</div>
-        <h1 className="font-pirata text-3xl text-yellow-300">No Treasure Yet</h1>
-        <p className="text-indigo-200 text-sm max-w-xs">
-          Conquer at least one island to fill your dictionary — then return here
-          to drill your words and chase an endless streak.
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col items-center justify-center px-8 py-12 gap-5 text-center animate-fade-in">
+        <h1 className="text-xl font-semibold text-white">No words yet</h1>
+        <p className="text-slate-400 text-sm max-w-xs">
+          Complete at least one heap to fill your vocabulary, then come back to
+          drill your words and chase an endless streak.
         </p>
         <button
           onClick={() => router.push('/map')}
-          className="w-full max-w-xs bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform"
+          className="w-full max-w-xs bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200"
         >
-          🗺️ Back to Map
+          Back to map
         </button>
       </div>
     )
@@ -87,9 +86,8 @@ export default function InfiniteLoader() {
 
   // Loading
   return (
-    <div className="min-h-full bg-gradient-to-b from-[#1a0b2e] via-indigo-950 to-blue-950 flex flex-col items-center justify-center px-8 gap-4">
-      <div className="text-5xl animate-float inline-block">⚡</div>
-      <p className="text-indigo-200 text-sm animate-pulse">Shuffling your treasure…</p>
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col items-center justify-center px-8 gap-4">
+      <p className="text-slate-400 text-sm animate-pulse">Loading your words…</p>
     </div>
   )
 }

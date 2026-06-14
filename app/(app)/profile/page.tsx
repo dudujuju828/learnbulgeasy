@@ -1,3 +1,4 @@
+import { Zap } from 'lucide-react'
 import { getSession } from '@/lib/auth'
 import { getDb } from '@/lib/db'
 import type { User, UserProgress } from '@/lib/types'
@@ -50,63 +51,64 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col items-center px-4 py-8 gap-5">
-      <div className="text-center">
-        <div className="text-6xl mb-2 animate-float inline-block">🏴‍☠️</div>
-        <h1 className="font-pirata text-4xl text-yellow-300 tracking-wide">Captain&apos;s Quarters</h1>
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-8 gap-5 animate-fade-in">
+      <div className="pt-2">
+        <h1 className="text-2xl font-semibold text-white tracking-tight">Profile</h1>
         {user && (
-          <p className="text-blue-300 text-sm mt-1">{user.email}</p>
+          <p className="text-slate-400 text-sm mt-1">{user.email}</p>
         )}
       </div>
 
       {user && (
-        <div className="w-full bg-blue-950/60 rounded-2xl border border-blue-700/30 p-4">
-          <p className="text-xs text-yellow-400/60 uppercase tracking-wider font-semibold mb-2">⚓ Voyage started</p>
-          <p className="text-blue-200 text-sm font-medium">
+        <div className="w-full bg-white/5 rounded-xl border border-white/10 p-4">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Member since</p>
+          <p className="text-white text-sm font-medium">
             {new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
       )}
 
       {/* Stats */}
-      <div className="w-full bg-blue-950/60 rounded-2xl border border-blue-700/30 p-4">
-        <p className="text-xs text-yellow-400/60 uppercase tracking-wider font-semibold mb-4">📊 Voyage Log</p>
+      <div className="w-full bg-white/5 rounded-xl border border-white/10 p-4">
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-4">Stats</p>
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="bg-blue-900/50 rounded-xl p-3 border border-blue-700/25">
-            <p className="text-2xl font-bold text-yellow-300">{heapsCompleted}</p>
-            <p className="text-xs text-blue-400 mt-0.5">🏝️ Islands</p>
+          <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+            <p className="text-2xl font-semibold text-emerald-400">{heapsCompleted}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Heaps complete</p>
           </div>
-          <div className="bg-amber-900/30 rounded-xl p-3 border border-yellow-700/20">
-            <p className="text-2xl font-bold text-yellow-300">{wordsLearned}</p>
-            <p className="text-xs text-blue-400 mt-0.5">💰 Words</p>
+          <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+            <p className="text-2xl font-semibold text-emerald-400">{wordsLearned}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Words learned</p>
           </div>
-          <div className="bg-blue-900/50 rounded-xl p-3 border border-blue-700/25">
-            <p className="text-2xl font-bold text-yellow-300">{bestStreak}</p>
-            <p className="text-xs text-blue-400 mt-0.5">🔥 Best run</p>
+          <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+            <p className="text-2xl font-semibold text-emerald-400">{bestStreak}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Best streak</p>
           </div>
         </div>
         {totalAttempts > 0 && (
-          <p className="text-xs text-blue-500 text-center mt-4">
-            ⚔️ {totalAttempts} battles fought
+          <p className="text-xs text-slate-500 text-center mt-4">
+            {totalAttempts} answers submitted
           </p>
         )}
       </div>
 
-      {/* Endless Voyage personal best */}
-      <div className="w-full bg-gradient-to-br from-purple-900/40 to-indigo-900/40 rounded-2xl border border-purple-500/30 p-4 flex items-center gap-4">
-        <span className="text-4xl shrink-0">⚡</span>
+      {/* Infinite Mode personal best */}
+      <div className="w-full bg-white/5 rounded-xl border border-white/10 p-4 flex items-center gap-4">
+        <span className="flex items-center justify-center w-11 h-11 rounded-lg bg-violet-500/15 text-violet-400 shrink-0">
+          <Zap size={20} />
+        </span>
         <div className="flex-1">
-          <p className="text-xs text-purple-300/70 uppercase tracking-wider font-semibold">Endless Voyage</p>
-          <p className="text-2xl font-bold text-yellow-300 leading-tight">
-            {infiniteBest} <span className="text-sm font-normal text-indigo-300">best streak</span>
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Infinite Mode</p>
+          <p className="text-2xl font-semibold text-white leading-tight mt-0.5">
+            {infiniteBest} <span className="text-sm font-normal text-slate-400">best streak</span>
           </p>
         </div>
       </div>
 
       {heapsCompleted === 0 && (
-        <div className="w-full bg-amber-900/20 rounded-2xl p-4 border border-yellow-700/20 text-center">
-          <p className="text-yellow-300 text-sm font-medium">Set sail on the Map to conquer your first island!</p>
-          <p className="text-blue-400 text-xs mt-1">Complete a heap twice to unlock words</p>
+        <div className="w-full bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+          <p className="text-white text-sm font-medium">Head to the map to complete your first heap</p>
+          <p className="text-slate-400 text-xs mt-1">Finish a heap twice to unlock its words</p>
         </div>
       )}
     </div>

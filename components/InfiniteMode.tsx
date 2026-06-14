@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { ArrowLeft, Volume2, Check, X, Zap } from 'lucide-react'
 import type { HeapWord } from '@/lib/types'
 import { matchesAnswer, matchesEnAnswer } from '@/lib/vocab'
 
@@ -188,45 +189,42 @@ export default function InfiniteMode({ words, initialBest }: Props) {
   // ── Cycle complete ─────────────────────────────────────────────────────────
   if (phase === 'cycle-complete') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#1a0b2e] via-indigo-950 to-blue-950 flex flex-col px-4 py-8 gap-5">
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-8 gap-5 animate-fade-in">
         <div className="text-center">
-          <div className="text-7xl mb-2 animate-bounce inline-block">🏆</div>
-          <div className="flex justify-center gap-2 mb-3 animate-sparkle">
-            {['⭐', '✨', '🌟', '✨', '⭐'].map((s, i) => (
-              <span key={i} className="text-xl">{s}</span>
-            ))}
-          </div>
-          <h2 className="font-pirata text-4xl text-yellow-300">All Words Mastered!</h2>
-          <p className="text-indigo-200 mt-1 text-sm">You sailed the entire dictionary. Shuffle for another lap?</p>
+          <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-violet-500/15 text-violet-400 mb-4 animate-scale-in">
+            <Check size={32} strokeWidth={2.5} />
+          </span>
+          <h2 className="text-2xl font-semibold text-white">All words cleared</h2>
+          <p className="text-slate-400 mt-1 text-sm">You ran through the whole dictionary. Shuffle for another lap?</p>
         </div>
 
-        <div className="w-full bg-indigo-950/60 rounded-2xl border border-purple-500/25 p-5 grid grid-cols-3 gap-3 text-center">
+        <div className="w-full bg-white/5 rounded-xl border border-white/10 p-5 grid grid-cols-3 gap-3 text-center">
           <div>
-            <p className="text-3xl font-bold text-yellow-300">{streak}</p>
-            <p className="text-xs text-indigo-300 mt-0.5">🔥 Streak</p>
+            <p className="text-2xl font-semibold text-violet-400">{streak}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Streak</p>
           </div>
           <div>
-            <p className="text-3xl font-bold text-yellow-300">{best}</p>
-            <p className="text-xs text-indigo-300 mt-0.5">🏅 Best</p>
+            <p className="text-2xl font-semibold text-violet-400">{best}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Best</p>
           </div>
           <div>
-            <p className="text-3xl font-bold text-yellow-300">{accuracy}%</p>
-            <p className="text-xs text-indigo-300 mt-0.5">🎯 Accuracy</p>
+            <p className="text-2xl font-semibold text-violet-400">{accuracy}%</p>
+            <p className="text-xs text-slate-500 mt-0.5">Accuracy</p>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
           <button
             onClick={restart}
-            className="w-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform"
+            className="w-full bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200"
           >
-            ⚡ Shuffle Again
+            Shuffle again
           </button>
           <button
             onClick={quit}
-            className="w-full bg-blue-950/80 text-blue-300 border border-blue-700/30 rounded-2xl py-3 font-semibold text-base active:scale-95 transition-transform"
+            className="w-full text-slate-400 hover:text-white rounded-lg py-3 font-medium text-sm transition-all duration-200"
           >
-            🗺️ Back to Map
+            Back to map
           </button>
         </div>
       </div>
@@ -237,45 +235,47 @@ export default function InfiniteMode({ words, initialBest }: Props) {
   const showWrong = phase === 'wrong'
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-[#1a0b2e] via-indigo-950 to-blue-950 flex flex-col px-4 py-5 gap-4">
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-5 gap-4 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
           onClick={quit}
-          className="text-indigo-300 text-sm py-2 pr-2 min-h-[44px] flex items-center"
+          className="flex items-center gap-1 text-slate-400 hover:text-white text-sm py-2 pr-2 min-h-[44px] transition-colors duration-200"
         >
-          ← Map
+          <ArrowLeft size={16} /> Map
         </button>
-        <p className="font-pirata text-xl text-yellow-300 tracking-wide">⚡ Endless Voyage</p>
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-white">
+          <Zap size={16} className="text-violet-400" /> Infinite Mode
+        </p>
         <div className="text-right min-w-[44px]">
-          <p className="text-[10px] text-indigo-400 uppercase tracking-wider leading-none">Best</p>
-          <p className="text-base font-bold text-yellow-300 leading-tight">🏅 {best}</p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none">Best</p>
+          <p className="text-base font-semibold text-violet-400 leading-tight">{best}</p>
         </div>
       </div>
 
-      {/* Streak counter — the star of the show */}
+      {/* Streak counter — the focal point */}
       <div className="text-center py-2">
-        <p className="text-xs text-indigo-300 uppercase tracking-widest mb-1">Current Streak</p>
+        <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Current streak</p>
         <p
           key={streak}
-          className={`text-7xl font-bold leading-none ${streak > 0 ? 'text-yellow-300 animate-streak-pop' : 'text-indigo-500'}`}
+          className={`text-7xl font-semibold leading-none ${streak > 0 ? 'text-violet-400 animate-streak-pop' : 'text-slate-600'}`}
         >
           {streak}
         </p>
         {justBeatBest && streak > 0 && (
-          <p className="text-xs text-purple-300 mt-1 font-semibold animate-sparkle">🏅 New personal best!</p>
+          <p className="text-xs text-violet-300 mt-2 font-medium animate-fade-in">New personal best</p>
         )}
       </div>
 
       {/* Progress through the shuffle */}
       <div>
-        <div className="flex justify-between text-xs text-indigo-400 mb-1">
-          <span>🎯 {accuracy}% accuracy</span>
-          <span>{remaining} word{remaining !== 1 ? 's' : ''} left in shuffle</span>
+        <div className="flex justify-between text-xs text-slate-500 mb-1.5">
+          <span>{accuracy}% accuracy</span>
+          <span>{remaining} word{remaining !== 1 ? 's' : ''} left</span>
         </div>
-        <div className="w-full h-2 bg-indigo-950/80 rounded-full overflow-hidden border border-indigo-800/50">
+        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-purple-500 to-yellow-400 transition-all duration-300"
+            className="h-full bg-violet-500 transition-all duration-300"
             style={{ width: `${(pos / deck.length) * 100}%` }}
           />
         </div>
@@ -283,41 +283,43 @@ export default function InfiniteMode({ words, initialBest }: Props) {
 
       {/* Prompt card */}
       <div
-        className={`w-full rounded-2xl p-6 text-center transition-all border-2 ${
+        className={`w-full rounded-xl p-6 text-center transition-all duration-200 border ${
           showCorrect
-            ? 'bg-gradient-to-br from-green-900/40 to-emerald-900/40 border-green-400/60 shadow-lg shadow-green-900/30'
+            ? 'bg-emerald-500/10 border-emerald-500/40'
             : showWrong
-            ? 'bg-gradient-to-br from-red-900/40 to-rose-900/40 border-red-400/60 shadow-lg shadow-red-900/30 animate-shake'
-            : 'bg-gradient-to-br from-indigo-900/60 to-purple-950/80 border-purple-700/40 shadow-lg shadow-indigo-950/50'
+            ? 'bg-red-500/10 border-red-500/40'
+            : 'bg-white/5 border-white/10'
         }`}
       >
-        <p className="text-xs text-indigo-300/70 uppercase tracking-widest mb-3">
-          {mode === 'en-bg' ? '🗺️ Translate to Bulgarian' : '⚓ Translate to English'}
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+          {mode === 'en-bg' ? 'Translate to Bulgarian' : 'Translate to English'}
         </p>
-        <p className="text-4xl font-bold text-white mb-1 leading-tight">{prompt}</p>
+        <p className="text-4xl font-semibold text-white mb-1 leading-tight">{prompt}</p>
         {mode === 'bg-en' && (
           <button
             onClick={() => speak(word.bg, 'bg-BG')}
-            className="text-2xl mt-2 opacity-50 hover:opacity-100 transition-opacity min-h-[44px] min-w-[44px] flex items-center justify-center mx-auto"
+            className="text-slate-400 hover:text-white transition-colors duration-200 mt-3 min-h-[44px] min-w-[44px] flex items-center justify-center mx-auto"
             aria-label="Listen"
           >
-            🔊
+            <Volume2 size={22} />
           </button>
         )}
 
         {showCorrect && (
-          <div className="mt-3 animate-sparkle">
-            <p className="text-green-300 font-bold text-xl">⚡ Correct!</p>
+          <div className="mt-3 flex items-center justify-center gap-1.5 text-emerald-400 font-medium animate-fade-in">
+            <Check size={18} strokeWidth={2.5} /> Correct
           </div>
         )}
         {showWrong && (
-          <div className="mt-3">
-            <p className="text-red-300 font-bold text-lg">✗ Streak broken</p>
-            <p className="text-indigo-200 text-sm mt-1.5">
-              Answer: <span className="font-bold text-yellow-300 text-base">{correctAnswer}</span>
+          <div className="mt-3 animate-fade-in">
+            <p className="flex items-center justify-center gap-1.5 text-red-400 font-medium">
+              <X size={18} strokeWidth={2.5} /> Streak broken
+            </p>
+            <p className="text-slate-400 text-sm mt-1.5">
+              Answer: <span className="font-semibold text-white">{correctAnswer}</span>
             </p>
             {mode === 'en-bg' && word.cyr && (
-              <p className="text-indigo-400 text-xs mt-0.5">{word.cyr}</p>
+              <p className="text-slate-500 text-xs mt-0.5">{word.cyr}</p>
             )}
           </div>
         )}
@@ -328,15 +330,15 @@ export default function InfiniteMode({ words, initialBest }: Props) {
         <div className="flex flex-col gap-3">
           <button
             onClick={continueAfterWrong}
-            className="w-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform min-h-[56px]"
+            className="w-full bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200 min-h-[56px]"
           >
-            ⚡ Try Again
+            Continue
           </button>
           <button
             onClick={quit}
-            className="w-full bg-blue-950/80 text-indigo-300 border border-indigo-700/40 rounded-2xl py-3 font-semibold text-base active:scale-95 transition-transform"
+            className="w-full text-slate-400 hover:text-white rounded-lg py-3 font-medium text-sm transition-all duration-200"
           >
-            🗺️ Quit to Map
+            Quit to map
           </button>
         </div>
       ) : (
@@ -350,7 +352,7 @@ export default function InfiniteMode({ words, initialBest }: Props) {
             placeholder={mode === 'en-bg' ? 'Type in Bulgarian (Cyrillic or hlyab)…' : 'Type in English…'}
             enterKeyHint="done"
             disabled={phase !== 'playing'}
-            className="w-full bg-indigo-950/80 border-2 border-purple-700/50 text-white placeholder-indigo-500 rounded-2xl px-4 py-4 text-lg focus:outline-none focus:border-yellow-500/50 disabled:opacity-40 min-h-[56px]"
+            className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 rounded-lg px-4 py-3.5 text-lg focus:outline-none focus:border-violet-500/50 transition-all duration-200 disabled:opacity-40 min-h-[56px]"
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -359,9 +361,9 @@ export default function InfiniteMode({ words, initialBest }: Props) {
           <button
             type="submit"
             disabled={!answer.trim() || phase !== 'playing'}
-            className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-md active:scale-95 transition-transform disabled:opacity-40 min-h-[56px]"
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200 disabled:opacity-40 min-h-[56px]"
           >
-            ⚔️ Submit
+            Submit
           </button>
         </form>
       )}

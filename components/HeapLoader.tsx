@@ -94,18 +94,17 @@ export default function HeapLoader() {
 
   if (status === 'missing') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col items-center justify-center px-8 py-12 gap-5 text-center">
-        <div className="text-6xl animate-float inline-block">🧭</div>
-        <h1 className="font-pirata text-3xl text-yellow-300">Uncharted Waters</h1>
-        <p className="text-blue-300 text-sm max-w-xs">
-          This island hasn&apos;t been downloaded yet. Connect to the internet once
-          to chart it, and it&apos;ll be playable offline forever after.
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col items-center justify-center px-8 py-12 gap-5 text-center animate-fade-in">
+        <h1 className="text-xl font-semibold text-white">Not downloaded yet</h1>
+        <p className="text-slate-400 text-sm max-w-xs">
+          This heap hasn&apos;t been downloaded. Connect to the internet once and
+          it&apos;ll be playable offline afterward.
         </p>
         <button
           onClick={() => router.push('/map')}
-          className="w-full max-w-xs bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform"
+          className="w-full max-w-xs bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200"
         >
-          🗺️ Back to Map
+          Back to map
         </button>
       </div>
     )
@@ -113,9 +112,8 @@ export default function HeapLoader() {
 
   // Loading
   return (
-    <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col items-center justify-center px-8 gap-4">
-      <div className="text-5xl animate-float inline-block">⚓</div>
-      <p className="text-blue-300 text-sm animate-pulse">Charting the island…</p>
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col items-center justify-center px-8 gap-4">
+      <p className="text-slate-400 text-sm animate-pulse">Loading heap…</p>
     </div>
   )
 }

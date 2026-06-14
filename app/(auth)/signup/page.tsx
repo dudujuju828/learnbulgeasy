@@ -49,19 +49,18 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-sm animate-slide-up">
       {/* Header */}
-      <div className="text-center mb-6">
-        <div className="text-6xl mb-3 animate-float inline-block">🏴‍☠️</div>
-        <h1 className="font-pirata text-4xl text-yellow-300 tracking-wide">Join the Crew</h1>
-        <p className="text-blue-300 text-base mt-1">Create your Bulgarian learning voyage</p>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Create account</h1>
+        <p className="text-slate-400 text-sm mt-2">Start learning Bulgarian today</p>
       </div>
 
       {/* Card */}
-      <div className="bg-blue-950/70 rounded-3xl p-6 border border-blue-700/30 shadow-2xl backdrop-blur-sm">
+      <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 shadow-lg shadow-black/20">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
+            <label htmlFor="email" className="text-xs font-medium text-slate-500 uppercase tracking-wider">
               Email
             </label>
             <input
@@ -73,11 +72,11 @@ export default function SignupPage() {
               required
               autoComplete="email"
               enterKeyHint="next"
-              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-emerald-500/50 transition-all duration-200 min-h-[48px]"
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
+            <label htmlFor="password" className="text-xs font-medium text-slate-500 uppercase tracking-wider">
               Password
             </label>
             <input
@@ -89,12 +88,12 @@ export default function SignupPage() {
               required
               autoComplete="new-password"
               enterKeyHint="next"
-              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-emerald-500/50 transition-all duration-200 min-h-[48px]"
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="confirm" className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">
-              Confirm Password
+            <label htmlFor="confirm" className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              Confirm password
             </label>
             <input
               id="confirm"
@@ -105,23 +104,23 @@ export default function SignupPage() {
               required
               autoComplete="new-password"
               enterKeyHint="go"
-              className="w-full bg-blue-900/60 border border-blue-700/40 text-white placeholder-blue-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500/50 min-h-[48px]"
+              className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-emerald-500/50 transition-all duration-200 min-h-[48px]"
             />
           </div>
           {error && (
-            <p className="text-sm text-red-400 text-center bg-red-900/20 border border-red-700/30 rounded-xl py-2">{error}</p>
+            <p className="text-sm text-red-400 text-center bg-red-500/10 border border-red-500/20 rounded-lg py-2">{error}</p>
           )}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 font-bold rounded-xl py-3.5 text-base active:scale-95 transition-transform disabled:opacity-50 min-h-[52px]"
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg py-3.5 text-base transition-all duration-200 disabled:opacity-50 min-h-[52px]"
           >
-            {loading ? 'Signing up…' : '⚔️ Join the Voyage →'}
+            {loading ? 'Creating account…' : 'Create account'}
           </button>
         </form>
-        <p className="text-center text-sm text-blue-400 mt-5">
+        <p className="text-center text-sm text-slate-400 mt-5">
           Already have an account?{' '}
-          <Link href="/login" className="text-yellow-400 font-medium hover:text-yellow-300 transition-colors inline-block py-3 px-2">
+          <Link href="/login" className="text-emerald-400 font-medium hover:text-emerald-300 transition-colors inline-block py-2 px-1">
             Sign in
           </Link>
         </p>

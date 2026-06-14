@@ -8,10 +8,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
       <OfflineSeeder />
-      <header className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-950 to-blue-900 text-white sticky top-0 z-50 shadow-lg border-b border-yellow-500/20">
+      <header className="flex items-center justify-between px-4 py-3 bg-slate-900/70 backdrop-blur-md text-white sticky top-0 z-50 border-b border-white/10">
         <Link href="/map" className="flex items-center gap-2">
-          <span className="text-2xl">🏴‍☠️</span>
-          <span className="font-pirata text-xl text-yellow-300 tracking-wide">LearnBulgEasy</span>
+          <span className="text-base font-semibold tracking-tight text-white">
+            Learn<span className="text-emerald-400">BulgEasy</span>
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <OnlineStatus />

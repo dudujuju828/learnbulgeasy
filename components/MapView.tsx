@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Check, Lock, ChevronRight, Zap } from 'lucide-react'
 
 export interface HeapNode {
   id: string
@@ -23,103 +24,48 @@ export interface MapData {
   heaps: HeapNode[]
 }
 
-const THEME_EMOJI: Record<string, string> = {
-  // Map 1 — Beginners Bay
-  Greetings: '👋', Numbers: '🔢', Food: '🍞', Colors: '🎨',
-  Family: '👨‍👩‍👧', Body: '💪', Time: '⏰', Travel: '✈️',
-  Verbs: '⚡', Emotions: '😊', Places: '🏔️', Objects: '🏠',
-  Weather: '☀️', Animals: '🐾', Clothes: '👕', Adjectives: '✨',
-  Actions: '🎯',
-  // Map 2 — Pirate's Passage
-  'At Home': '🛋️', Nature: '🌿', Work: '💼', Health: '🩺',
-  Shopping: '🛒', School: '🎓', Hobbies: '🎸', City: '🏙️',
+interface Accent {
+  text: string
+  dot: string
+  nodeComplete: string
+  nodeCurrent: string
+  cardComplete: string
+  cardCurrent: string
+  badgeComplete: string
+  badgeCurrent: string
+  switchActive: string
+  bar: string
 }
 
-interface MapTheme {
-  page: string
-  title: string
-  subtitle: string
-  accentText: string
-  rope: string
-  wave: string
-  streakBadge: string
-  emptyText: string
-  icons: { completed: string; current: string; unlocked: string; locked: string }
-  node: { completed: string; current: string; unlocked: string; locked: string }
-  card: { completed: string; current: string; unlocked: string }
-  cardTitle: { completed: string; current: string; unlocked: string }
-  badge: { completed: string; inProgress: string; current: string }
-  chevron: { completed: string; other: string }
-  statsBar: string
-  fog: boolean
-}
-
-const THEMES: Record<string, MapTheme> = {
-  pirate: {
-    page: 'bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900',
-    title: 'text-yellow-300',
-    subtitle: 'text-blue-300/80',
-    accentText: 'text-yellow-300',
-    rope: 'border-yellow-500/25',
-    wave: 'text-blue-400/30',
-    streakBadge: 'bg-yellow-400 text-yellow-900 shadow-yellow-900/40',
-    emptyText: 'text-blue-300',
-    icons: { completed: '💰', current: '🚢', unlocked: '⚓', locked: '🔒' },
-    node: {
-      completed: 'bg-gradient-to-br from-yellow-400 to-amber-500 border-yellow-300 animate-treasure-glow',
-      current: 'bg-gradient-to-br from-blue-400 to-blue-500 border-blue-200 animate-current-pulse',
-      unlocked: 'bg-blue-800 border-blue-600',
-      locked: 'bg-blue-950 border-blue-800 opacity-50',
-    },
-    card: {
-      completed: 'bg-yellow-400/10 border-yellow-500/25 shadow-sm shadow-yellow-900/20',
-      current: 'bg-blue-500/20 border-blue-400/40 shadow-lg shadow-blue-950/60',
-      unlocked: 'bg-blue-900/30 border-blue-700/30',
-    },
-    cardTitle: { completed: 'text-yellow-300', current: 'text-white', unlocked: 'text-blue-200' },
-    badge: {
-      completed: 'text-yellow-400 bg-yellow-400/10 border-yellow-500/25',
-      inProgress: 'text-blue-300 bg-blue-400/15 border-blue-400/25',
-      current: 'text-blue-200 bg-blue-400/15 border-blue-300/25',
-    },
-    chevron: { completed: 'text-yellow-400', other: 'text-blue-500' },
-    statsBar: 'bg-blue-950/60 border-blue-700/30',
-    fog: false,
+// Map 1 → emerald, Map 2 → violet. Subtle accents on a neutral slate canvas.
+const ACCENTS: Record<string, Accent> = {
+  emerald: {
+    text: 'text-emerald-400',
+    dot: 'bg-emerald-400',
+    nodeComplete: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+    nodeCurrent: 'bg-emerald-500 text-white border-emerald-400 ring-4 ring-emerald-500/15',
+    cardComplete: 'bg-emerald-500/[0.07] border-emerald-500/20',
+    cardCurrent: 'bg-white/[0.07] border-emerald-500/30',
+    badgeComplete: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+    badgeCurrent: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+    switchActive: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    bar: 'bg-emerald-400',
   },
-  straits: {
-    page: 'bg-gradient-to-b from-[#03201c] via-teal-950 to-emerald-900',
-    title: 'text-amber-200',
-    subtitle: 'text-teal-300/80',
-    accentText: 'text-amber-200',
-    rope: 'border-amber-300/20',
-    wave: 'text-teal-400/30',
-    streakBadge: 'bg-amber-300 text-teal-900 shadow-teal-900/40',
-    emptyText: 'text-teal-300',
-    icons: { completed: '🏮', current: '⛵', unlocked: '🪸', locked: '🌫️' },
-    node: {
-      completed: 'bg-gradient-to-br from-amber-300 to-orange-400 border-amber-200 animate-treasure-glow',
-      current: 'bg-gradient-to-br from-rose-400 to-orange-400 border-rose-200 animate-current-pulse',
-      unlocked: 'bg-teal-800 border-teal-600',
-      locked: 'bg-teal-950 border-teal-800 opacity-50',
-    },
-    card: {
-      completed: 'bg-amber-300/10 border-amber-300/25 shadow-sm shadow-teal-900/20',
-      current: 'bg-rose-400/15 border-rose-300/40 shadow-lg shadow-teal-950/60',
-      unlocked: 'bg-teal-900/30 border-teal-700/30',
-    },
-    cardTitle: { completed: 'text-amber-200', current: 'text-white', unlocked: 'text-teal-200' },
-    badge: {
-      completed: 'text-amber-300 bg-amber-300/10 border-amber-300/25',
-      inProgress: 'text-rose-200 bg-rose-400/15 border-rose-300/25',
-      current: 'text-rose-100 bg-rose-400/15 border-rose-200/25',
-    },
-    chevron: { completed: 'text-amber-300', other: 'text-teal-500' },
-    statsBar: 'bg-teal-950/60 border-teal-700/30',
-    fog: false,
+  violet: {
+    text: 'text-violet-400',
+    dot: 'bg-violet-400',
+    nodeComplete: 'bg-violet-500/20 text-violet-400 border-violet-500/30',
+    nodeCurrent: 'bg-violet-500 text-white border-violet-400 ring-4 ring-violet-500/15',
+    cardComplete: 'bg-violet-500/[0.07] border-violet-500/20',
+    cardCurrent: 'bg-white/[0.07] border-violet-500/30',
+    badgeComplete: 'text-violet-400 bg-violet-500/10 border-violet-500/20',
+    badgeCurrent: 'text-violet-400 bg-violet-500/10 border-violet-500/20',
+    switchActive: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
+    bar: 'bg-violet-400',
   },
 }
 
-const WAVE = '～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～'
+const accentFor = (theme: string): Accent => (theme === 'straits' ? ACCENTS.violet : ACCENTS.emerald)
 
 export default function MapView({ maps, initialMapId }: { maps: MapData[]; initialMapId: number }) {
   const [selectedId, setSelectedId] = useState(initialMapId)
@@ -127,17 +73,15 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   // Empty state — DB not connected / not migrated
   if (maps.length === 0) {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 pb-8">
-        <div className="relative px-4 pt-8 pb-4 text-center">
-          <div className="text-5xl mb-2 animate-float inline-block">🧭</div>
-          <h1 className="font-pirata text-4xl text-yellow-300 tracking-wide drop-shadow-lg">Voyage Map</h1>
-          <p className="text-blue-300/80 text-sm mt-1">Navigate the seas of Bulgarian</p>
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 px-5 pt-12">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Map</h1>
+          <p className="text-slate-400 text-sm mt-1">Your learning path</p>
         </div>
-        <div className="mx-4 mt-4 bg-blue-900/40 rounded-2xl p-6 text-center border border-blue-600/30 backdrop-blur-sm">
-          <div className="text-4xl mb-3 animate-float inline-block">⚓</div>
-          <h2 className="font-pirata text-2xl text-yellow-300 mb-2">Seas Uncharted</h2>
-          <p className="text-sm text-blue-300">
-            Database not connected. Deploy to Vercel and run migrations to begin your voyage.
+        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 text-center border border-white/10">
+          <h2 className="text-lg font-semibold text-white mb-2">Nothing here yet</h2>
+          <p className="text-sm text-slate-400">
+            Database not connected. Deploy and run migrations to load your heaps.
           </p>
         </div>
       </div>
@@ -145,7 +89,7 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   }
 
   const selected = maps.find(m => m.id === selectedId) ?? maps[0]
-  const t = THEMES[selected.theme] ?? THEMES.pirate
+  const a = accentFor(selected.theme)
 
   // Per-selected-map stats
   let streak = 0
@@ -159,59 +103,31 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   const anyCompleted = maps.some(m => m.heaps.some(h => h.completed))
 
   return (
-    <div className={`relative min-h-full pb-8 ${t.page}`}>
-      {/* Fog / mist drift (Pirate's Passage) */}
-      {selected.theme === 'straits' && (
-        <div className="pointer-events-none absolute inset-0 overflow-hidden select-none z-0">
-          <div className="map-fog map-fog-1" />
-          <div className="map-fog map-fog-2" />
-        </div>
-      )}
-
-      {/* Stars (Beginners Bay) */}
-      {selected.theme !== 'straits' && (
-        <div className="absolute inset-x-0 top-0 h-48 pointer-events-none select-none overflow-hidden">
-          <span className="absolute top-4 left-6 text-yellow-100/50 text-[10px]">✦</span>
-          <span className="absolute top-8 left-1/4 text-yellow-200/40 text-xs">★</span>
-          <span className="absolute top-3 right-10 text-yellow-100/60 text-xs">★</span>
-          <span className="absolute top-12 right-1/4 text-yellow-200/30 text-[10px]">✦</span>
-        </div>
-      )}
-
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 pb-10 animate-fade-in">
       {/* Header */}
-      <div className="relative z-10 px-4 pt-8 pb-3 text-center">
-        <div className="text-5xl mb-2 animate-float inline-block">{selected.theme === 'straits' ? '🏮' : '🧭'}</div>
-        <h1 className={`font-pirata text-4xl tracking-wide drop-shadow-lg ${t.title}`}>{selected.name}</h1>
-        <p className={`text-sm mt-1 ${t.subtitle}`}>
-          {selected.description ?? 'Navigate the seas of Bulgarian'}
+      <div className="px-5 pt-10 pb-4">
+        <h1 className="text-2xl font-semibold text-white tracking-tight">{selected.name}</h1>
+        <p className="text-slate-400 text-sm mt-1">
+          {selected.description ?? 'Your learning path'}
         </p>
-
-        {streak > 0 && (
-          <div className={`inline-flex items-center gap-1.5 mt-3 px-4 py-1.5 rounded-full text-sm font-bold shadow-lg ${t.streakBadge}`}>
-            <span>🔥</span>
-            <span>{streak} island{streak !== 1 ? 's' : ''} conquered!</span>
-          </div>
-        )}
       </div>
 
       {/* Map switcher */}
       {maps.length > 1 && (
-        <div className="relative z-10 px-4 pb-2">
-          <div className="flex gap-2 p-1 rounded-2xl bg-black/25 border border-white/10 backdrop-blur-sm">
+        <div className="px-5 pb-4">
+          <div className="flex gap-1.5 p-1 rounded-lg bg-white/5 border border-white/10">
             {maps.map(m => {
               const active = m.id === selected.id
-              const mt = THEMES[m.theme] ?? THEMES.pirate
+              const ma = accentFor(m.theme)
               return (
                 <button
                   key={m.id}
                   onClick={() => setSelectedId(m.id)}
-                  className={`flex-1 py-2 px-2 rounded-xl text-sm font-semibold transition-all min-h-[40px] ${
-                    active
-                      ? `${mt.statsBar} ${mt.accentText} shadow-inner border border-white/10`
-                      : 'text-white/50'
+                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium border transition-all duration-200 min-h-[40px] ${
+                    active ? ma.switchActive : 'text-slate-400 border-transparent hover:text-slate-200'
                   }`}
                 >
-                  {m.theme === 'straits' ? '🏮 ' : '⚓ '}{m.name}
+                  {m.name}
                 </button>
               )
             })}
@@ -221,136 +137,116 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
 
       {/* Endless Voyage */}
       {anyCompleted && (
-        <div className="relative z-10 px-4 pb-1">
+        <div className="px-5 pb-5">
           <Link
             href="/infinite"
-            className="flex items-center gap-3 w-full rounded-2xl p-3.5 bg-gradient-to-br from-purple-700 to-indigo-800 border border-purple-400/30 shadow-lg shadow-indigo-950/50 active:scale-95 transition-transform min-h-[60px]"
+            className="flex items-center gap-3 w-full rounded-xl p-4 bg-white/5 hover:bg-white/[0.08] border border-white/10 transition-all duration-200 min-h-[60px]"
           >
-            <span className="text-3xl shrink-0 animate-float">⚡</span>
+            <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-violet-500/15 text-violet-400 shrink-0">
+              <Zap size={20} />
+            </span>
             <div className="flex-1 min-w-0">
-              <p className="font-pirata text-xl text-yellow-300 tracking-wide leading-tight">Endless Voyage</p>
-              <p className="text-xs text-indigo-200/80 mt-0.5">Drill your treasure words — chase your best streak</p>
+              <p className="text-sm font-semibold text-white">Infinite Mode</p>
+              <p className="text-xs text-slate-400 mt-0.5">Drill your words — chase your best streak</p>
             </div>
-            <span className="text-yellow-400 text-lg shrink-0">›</span>
+            <ChevronRight size={18} className="text-slate-500 shrink-0" />
           </Link>
         </div>
       )}
 
-      {/* Animated waves */}
-      <div className="relative z-10 overflow-hidden h-6 mb-4 select-none">
-        <div className={`text-2xl whitespace-nowrap animate-wave ${t.wave}`}>{WAVE}</div>
-      </div>
-
       {/* Heap list */}
-      <div className="relative z-10 px-4">
-        <div className={`absolute left-[36px] top-0 bottom-0 w-0.5 border-l-2 border-dashed z-0 ${t.rope}`} />
+      <div className="px-5">
+        <div className="relative">
+          {/* thin connector line */}
+          <div className="absolute left-[19px] top-3 bottom-3 w-px bg-white/10" />
 
-        <div className="flex flex-col gap-0">
-          {selected.heaps.map(heap => {
-            const emoji = THEME_EMOJI[heap.theme] ?? '📦'
-            const nodeIcon = heap.completed
-              ? t.icons.completed
-              : heap.isCurrent
-              ? t.icons.current
-              : heap.unlocked
-              ? t.icons.unlocked
-              : t.icons.locked
-            const nodeClass = heap.completed
-              ? t.node.completed
-              : heap.isCurrent
-              ? t.node.current
-              : heap.unlocked
-              ? t.node.unlocked
-              : t.node.locked
+          <div className="flex flex-col gap-2.5">
+            {selected.heaps.map((heap, i) => {
+              const num = i + 1
+              const nodeClass = heap.completed
+                ? a.nodeComplete
+                : heap.isCurrent
+                ? a.nodeCurrent
+                : heap.unlocked
+                ? 'bg-white/10 text-white border-white/20'
+                : 'bg-white/5 text-slate-600 border-white/5'
 
-            return (
-              <div key={heap.id} className="relative flex items-start gap-3 pb-3">
-                <div className="relative z-10 flex flex-col items-center w-9 pt-0.5 shrink-0">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm shadow-lg border-2 transition-all ${nodeClass}`}>
-                    {nodeIcon}
-                  </div>
-                </div>
-
-                {heap.unlocked ? (
-                  <Link
-                    href={`/heap/${heap.id}`}
-                    className={`flex-1 rounded-2xl p-3.5 border flex items-center gap-3 active:scale-95 transition-all min-h-[60px] ${
-                      heap.completed ? t.card.completed : heap.isCurrent ? t.card.current : t.card.unlocked
-                    }`}
+              return (
+                <div key={heap.id} className="relative flex items-center gap-3">
+                  {/* Node */}
+                  <div
+                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold border shrink-0 transition-all duration-200 ${nodeClass}`}
                   >
-                    <span className={`text-2xl shrink-0 ${!heap.completed && !heap.isCurrent ? 'opacity-50' : ''}`}>
-                      {emoji}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-semibold text-sm leading-tight ${
-                        heap.completed ? t.cardTitle.completed : heap.isCurrent ? t.cardTitle.current : t.cardTitle.unlocked
-                      }`}>
-                        {heap.name}
-                      </p>
-                      {heap.description && (
-                        <p className="text-xs text-white/45 mt-0.5 truncate">{heap.description}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                        {heap.completed && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${t.badge.completed}`}>
-                            ✓ Plundered
-                          </span>
+                    {heap.completed ? <Check size={16} strokeWidth={2.5} /> : heap.unlocked ? num : <Lock size={14} />}
+                  </div>
+
+                  {/* Card */}
+                  {heap.unlocked ? (
+                    <Link
+                      href={`/heap/${heap.id}`}
+                      className={`flex-1 rounded-xl p-3.5 border flex items-center gap-3 transition-all duration-200 min-h-[60px] hover:bg-white/[0.08] ${
+                        heap.completed ? a.cardComplete : heap.isCurrent ? a.cardCurrent : 'bg-white/5 border-white/10'
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white leading-tight">{heap.name}</p>
+                        {heap.description && (
+                          <p className="text-xs text-slate-400 mt-0.5 truncate">{heap.description}</p>
                         )}
-                        {heap.inProgress && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${t.badge.inProgress}`}>
-                            Loop {heap.loops_completed}/2
-                          </span>
-                        )}
-                        {heap.isCurrent && !heap.inProgress && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${t.badge.current}`}>
-                            ▶ Next island
-                          </span>
-                        )}
-                        {!heap.completed && !heap.inProgress && !heap.isCurrent && (
-                          <span className="text-xs text-white/40 font-medium">5 words · 2 loops</span>
-                        )}
+                        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                          {heap.completed && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${a.badgeComplete}`}>
+                              Complete
+                            </span>
+                          )}
+                          {heap.inProgress && (
+                            <span className="text-xs px-2 py-0.5 rounded-full font-medium border text-amber-400 bg-amber-500/10 border-amber-500/20">
+                              Loop {heap.loops_completed}/2
+                            </span>
+                          )}
+                          {heap.isCurrent && !heap.inProgress && (
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${a.badgeCurrent}`}>
+                              Up next
+                            </span>
+                          )}
+                          {!heap.completed && !heap.inProgress && !heap.isCurrent && (
+                            <span className="text-xs text-slate-500 font-medium">5 words · 2 loops</span>
+                          )}
+                        </div>
+                      </div>
+                      <ChevronRight size={18} className="text-slate-500 shrink-0" />
+                    </Link>
+                  ) : (
+                    <div className="flex-1 rounded-xl p-3.5 border bg-white/[0.02] border-white/5 flex items-center gap-3 min-h-[60px]">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-500 leading-tight">{heap.name}</p>
+                        <p className="text-xs text-slate-600 mt-0.5">Complete the previous heap to unlock</p>
                       </div>
                     </div>
-                    <span className={`text-base shrink-0 ${heap.completed ? t.chevron.completed : t.chevron.other}`}>›</span>
-                  </Link>
-                ) : (
-                  <div className="flex-1 rounded-2xl p-3.5 border bg-black/30 border-white/10 flex items-center gap-3 opacity-35 min-h-[60px]">
-                    <span className="text-2xl grayscale">{t.icons.locked}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-white/60 text-sm">{heap.name}</p>
-                      <p className="text-xs text-white/40 mt-0.5">Conquer previous island to unlock</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Second wave divider */}
-      <div className="relative z-10 overflow-hidden h-5 my-4 select-none">
-        <div className={`text-2xl whitespace-nowrap ${t.wave}`} style={{ animation: 'wave-scroll 12s linear infinite reverse' }}>
-          {WAVE}
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
 
       {/* Stats bar */}
-      <div className="relative z-10 mx-4">
-        <div className={`flex justify-around py-4 rounded-2xl border backdrop-blur-sm ${t.statsBar}`}>
+      <div className="px-5 mt-6">
+        <div className="flex justify-around py-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10">
           <div className="text-center">
-            <p className={`text-xl font-bold ${t.accentText}`}>{completedCount}</p>
-            <p className="text-xs text-white/50 mt-0.5">🏝️ Islands</p>
+            <p className={`text-xl font-semibold ${a.text}`}>{completedCount}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Heaps</p>
           </div>
-          <div className="w-px bg-white/15" />
+          <div className="w-px bg-white/10" />
           <div className="text-center">
-            <p className={`text-xl font-bold ${t.accentText}`}>{completedCount * 5}</p>
-            <p className="text-xs text-white/50 mt-0.5">💰 Words</p>
+            <p className={`text-xl font-semibold ${a.text}`}>{completedCount * 5}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Words</p>
           </div>
-          <div className="w-px bg-white/15" />
+          <div className="w-px bg-white/10" />
           <div className="text-center">
-            <p className={`text-xl font-bold ${t.accentText}`}>{streak > 0 ? `🔥${streak}` : '—'}</p>
-            <p className="text-xs text-white/50 mt-0.5">🔥 Streak</p>
+            <p className={`text-xl font-semibold ${a.text}`}>{streak}</p>
+            <p className="text-xs text-slate-500 mt-0.5">Streak</p>
           </div>
         </div>
       </div>

@@ -123,7 +123,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: linear-gradient(to bottom, #0f172a, #1e293b);
   }
   html {
     @apply font-sans;
@@ -134,111 +135,49 @@
   }
 }
 
-/* Pirate font utility */
+/* Pirata One — reserved for the app wordmark only, used sparingly */
 .font-pirata {
   font-family: var(--font-pirata-one, 'Georgia', serif);
 }
 
-/* Pirate animations */
-@keyframes wave-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+/* ── Modern micro-interactions ──────────────────────────────────────────────
+   Subtle, fast, premium. No bounce, sparkle, or cartoon motion. */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* GPU-composited glow: transform+opacity instead of box-shadow (avoids repaint) */
-@keyframes treasure-glow {
-  0%, 100% { transform: scale(1); opacity: 0.88; }
-  50% { transform: scale(1.07); opacity: 1; }
-}
-
-@keyframes current-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  70% { transform: scale(1.12); opacity: 0.75; }
-}
-
-@keyframes sparkle-in {
-  0% { opacity: 0; transform: scale(0) rotate(-10deg); }
-  60% { opacity: 1; transform: scale(1.15) rotate(5deg); }
-  100% { opacity: 1; transform: scale(1) rotate(0deg); }
-}
-
-@keyframes correct-flash {
-  0% { background-color: rgb(240, 253, 244); }
-  40% { background-color: rgb(187, 247, 208); }
-  100% { background-color: rgb(240, 253, 244); }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(5px); }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes streak-pop {
   0% { transform: scale(1); }
-  45% { transform: scale(1.28); }
+  45% { transform: scale(1.12); }
   100% { transform: scale(1); }
 }
 
-/* Map 2 — Pirate's Passage: drifting mist banks */
-@keyframes fog-drift {
-  0% { transform: translateX(-25%); }
-  100% { transform: translateX(25%); }
-}
-
-.map-fog {
-  position: absolute;
-  left: -25%;
-  width: 150%;
-  height: 220px;
-  background: radial-gradient(ellipse at center, rgba(94, 234, 212, 0.12) 0%, rgba(94, 234, 212, 0) 70%);
-  will-change: transform;
-  pointer-events: none;
-}
-.map-fog-1 { top: 12%; animation: fog-drift 18s ease-in-out infinite alternate; }
-.map-fog-2 { top: 55%; animation: fog-drift 26s ease-in-out infinite alternate-reverse; }
-
-/* will-change pre-promotes elements to GPU compositor layers before animation starts */
-.animate-wave { animation: wave-scroll 8s linear infinite; will-change: transform; }
-.animate-float { animation: float 3s ease-in-out infinite; will-change: transform; }
-.animate-treasure-glow { animation: treasure-glow 2s ease-in-out infinite; will-change: transform, opacity; }
-.animate-current-pulse { animation: current-pulse 1.8s ease-out infinite; will-change: transform, opacity; }
-.animate-sparkle { animation: sparkle-in 0.4s ease-out forwards; will-change: transform, opacity; }
-.animate-correct-flash { animation: correct-flash 0.6s ease-out; }
-.animate-shake { animation: shake 0.5s ease-in-out; will-change: transform; }
-.animate-streak-pop { animation: streak-pop 0.45s ease-out; will-change: transform; }
+.animate-fade-in { animation: fade-in 0.2s ease-out; }
+.animate-slide-up { animation: slide-up 0.2s ease-out; will-change: transform, opacity; }
+.animate-scale-in { animation: scale-in 0.2s ease-out; will-change: transform, opacity; }
+.animate-streak-pop { animation: streak-pop 0.3s ease-out; will-change: transform; }
 
 /* Disable non-essential animations for battery saver / accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .animate-wave,
-  .animate-float,
-  .animate-treasure-glow,
-  .animate-current-pulse,
-  .map-fog {
-    animation: none;
-    will-change: auto;
-  }
-  .animate-sparkle {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-scale-in,
+  .animate-streak-pop {
     animation: none;
     opacity: 1;
     transform: none;
     will-change: auto;
-  }
-  .animate-correct-flash {
-    animation: none;
-  }
-  .animate-shake,
-  .animate-streak-pop {
-    animation: none;
-  }
-  .animate-bounce {
-    animation: none !important;
   }
 }

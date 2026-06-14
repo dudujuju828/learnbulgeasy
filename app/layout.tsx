@@ -16,7 +16,7 @@ const pirataOne = Pirata_One({
 
 export const metadata: Metadata = {
   title: "LearnBulgEasy",
-  description: "Learn Bulgarian vocabulary with a pirate adventure",
+  description: "Learn Bulgarian vocabulary, one heap at a time",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -33,7 +33,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#060d1f",
+  themeColor: "#0f172a",
 };
 
 export default function RootLayout({
@@ -41,7 +41,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable} ${pirataOne.variable} h-full antialiased`}>
-      <body className="h-full bg-[#060d1f]">
+      <body className="h-full bg-slate-900">
         <PWAProvider>{children}</PWAProvider>
       </body>
     </html>

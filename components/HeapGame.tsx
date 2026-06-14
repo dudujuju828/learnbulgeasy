@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { ArrowLeft, Volume2, Check, X } from 'lucide-react'
 import type { Heap, UserProgress } from '@/lib/types'
 import { matchesAnswer, matchesEnAnswer } from '@/lib/vocab'
 
@@ -185,69 +186,64 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
     setPhase('playing')
   }, [])
 
-  const themeEmoji: Record<string, string> = {
-    Greetings: '👋', Numbers: '🔢', Food: '🍞', Colors: '🎨',
-    Family: '👨‍👩‍👧', Body: '💪', Time: '⏰', Travel: '✈️',
-    Verbs: '⚡', Emotions: '😊', Places: '🏔️', Objects: '🏠',
-    Weather: '☀️', Animals: '🐾', Clothes: '👕', Adjectives: '✨',
-    Actions: '🎯',
-  }
-
   // ── Mode Select ──────────────────────────────────────────────────────────
   if (phase === 'mode-select') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col px-4 py-8 gap-6">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-float inline-block">
-            {themeEmoji[heap.theme] ?? '📦'}
-          </div>
-          <h1 className="font-pirata text-3xl text-yellow-300 tracking-wide">{heap.name}</h1>
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-8 gap-6 animate-fade-in">
+        <div>
+          <button
+            onClick={() => router.push('/map')}
+            className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors duration-200 -ml-1 mb-4 min-h-[44px]"
+          >
+            <ArrowLeft size={16} /> Map
+          </button>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">{heap.name}</h1>
           {heap.description && (
-            <p className="text-sm text-blue-300 mt-1">{heap.description}</p>
+            <p className="text-sm text-slate-400 mt-1">{heap.description}</p>
           )}
           {progress?.completed && (
-            <span className="inline-block mt-2 text-xs bg-yellow-400/20 text-yellow-300 border border-yellow-500/30 px-3 py-1 rounded-full font-medium">
-              ✓ Already plundered — replay for practice
+            <span className="inline-block mt-3 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full font-medium">
+              Completed — replay for practice
             </span>
           )}
         </div>
 
-        {/* Ship's manifest — word preview */}
-        <div className="w-full bg-blue-950/60 rounded-2xl p-4 border border-blue-700/40 backdrop-blur-sm">
-          <p className="text-xs text-yellow-400/80 font-semibold mb-2 uppercase tracking-wider">📜 Ship&apos;s Manifest</p>
-          <div className="grid grid-cols-2 gap-2">
+        {/* Word preview */}
+        <div className="w-full bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">Words in this heap</p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             {heap.words.map((w) => (
-              <div key={w.en} className="text-sm flex items-center gap-1">
-                <span className="text-blue-200">{w.en}</span>
-                <span className="text-blue-600">→</span>
-                <span className="text-yellow-300 font-medium">{w.bg}</span>
+              <div key={w.en} className="text-sm flex items-center gap-1.5">
+                <span className="text-slate-400">{w.en}</span>
+                <span className="text-slate-600">→</span>
+                <span className="text-white font-medium">{w.bg}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="w-full">
-          <p className="text-center text-sm text-blue-400 mb-4">Choose your navigation mode</p>
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">Choose a mode</p>
           <div className="flex flex-col gap-3">
             <button
               onClick={() => startGame('en-bg')}
-              className="w-full bg-gradient-to-br from-blue-800 to-blue-900 text-white rounded-2xl py-4 px-5 text-left shadow-lg border border-blue-600/30 active:scale-95 transition-transform"
+              className="w-full bg-white/5 hover:bg-white/[0.08] text-white rounded-xl py-4 px-5 text-left border border-white/10 transition-all duration-200"
             >
-              <div className="font-bold text-lg">🗺️ English → Bulgarian</div>
-              <div className="text-blue-300 text-sm mt-0.5">Type the Cyrillic answer (хляб) or transliteration (hlyab)</div>
+              <div className="font-medium text-base">English → Bulgarian</div>
+              <div className="text-slate-400 text-sm mt-0.5">Type the Cyrillic answer (хляб) or transliteration (hlyab)</div>
             </button>
             <button
               onClick={() => startGame('bg-en')}
-              className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 px-5 text-left shadow-lg active:scale-95 transition-transform"
+              className="w-full bg-white/5 hover:bg-white/[0.08] text-white rounded-xl py-4 px-5 text-left border border-white/10 transition-all duration-200"
             >
-              <div className="font-bold text-lg">⚓ Bulgarian → English</div>
-              <div className="text-yellow-800 text-sm mt-0.5">Hear and see the Cyrillic word, type English</div>
+              <div className="font-medium text-base">Bulgarian → English</div>
+              <div className="text-slate-400 text-sm mt-0.5">Hear and see the Cyrillic word, type English</div>
             </button>
           </div>
         </div>
 
-        <p className="text-xs text-blue-500 text-center px-4">
-          ⚔️ Get all 5 words correct twice in a row to plunder this island
+        <p className="text-xs text-slate-500 text-center">
+          Get all 5 words correct twice in a row to complete this heap
         </p>
       </div>
     )
@@ -256,28 +252,30 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
   // ── Loop Done ─────────────────────────────────────────────────────────────
   if (phase === 'loop-done') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col items-center justify-center px-6 py-12 gap-6">
-        <div className="text-7xl animate-float inline-block">⚓</div>
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col items-center justify-center px-5 py-12 gap-6 animate-fade-in">
         <div className="text-center">
-          <h2 className="font-pirata text-4xl text-yellow-300">First Island Mapped!</h2>
-          <p className="text-blue-300 mt-2">You got all 5 words right. One more voyage to go!</p>
+          <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-400 mb-4">
+            <Check size={28} strokeWidth={2.5} />
+          </span>
+          <h2 className="text-2xl font-semibold text-white">Loop 1 complete</h2>
+          <p className="text-slate-400 mt-2 text-sm">All 5 correct. One more loop to finish.</p>
         </div>
-        <div className="w-full bg-blue-950/60 rounded-2xl border border-blue-700/40 overflow-hidden">
-          <div className="bg-blue-900/60 px-4 py-2 border-b border-blue-700/40">
-            <p className="text-xs text-yellow-400/70 uppercase tracking-wider font-semibold">📜 Word Review</p>
+        <div className="w-full bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+          <div className="px-4 py-2.5 border-b border-white/10">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Word review</p>
           </div>
           {heap.words.map((w) => (
-            <div key={w.en} className="flex justify-between items-center px-4 py-3 border-b border-blue-800/40 last:border-0">
-              <span className="text-blue-200 text-sm">{w.en}</span>
-              <span className="text-yellow-300 font-medium text-sm">{w.bg}</span>
+            <div key={w.en} className="flex justify-between items-center px-4 py-3 border-b border-white/5 last:border-0">
+              <span className="text-slate-400 text-sm">{w.en}</span>
+              <span className="text-white font-medium text-sm">{w.bg}</span>
             </div>
           ))}
         </div>
         <button
           onClick={() => setPhase('playing')}
-          className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform"
+          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200"
         >
-          ⚔️ Start Loop 2
+          Start loop 2
         </button>
       </div>
     )
@@ -286,45 +284,38 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
   // ── Heap Complete ─────────────────────────────────────────────────────────
   if (phase === 'heap-complete') {
     return (
-      <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col px-4 py-8 gap-5">
-        {/* Celebration */}
+      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-8 gap-5 animate-fade-in">
         <div className="text-center">
-          <div className="text-7xl mb-2 animate-bounce inline-block">💰</div>
-          <div className="flex justify-center gap-2 mb-3 animate-sparkle">
-            {['⭐', '✨', '🌟', '✨', '⭐'].map((s, i) => (
-              <span key={i} className="text-xl">{s}</span>
-            ))}
-          </div>
-          <h2 className="font-pirata text-4xl text-yellow-300">Treasure Found!</h2>
-          <p className="text-blue-300 mt-1 text-sm">
-            Both loops done — 5 words added to your chest!
+          <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/15 text-emerald-400 mb-4 animate-scale-in">
+            <Check size={32} strokeWidth={2.5} />
+          </span>
+          <h2 className="text-2xl font-semibold text-white">Heap complete</h2>
+          <p className="text-slate-400 mt-1 text-sm">
+            Both loops done — 5 words added to your vocabulary.
           </p>
-          {saving && <p className="text-xs text-blue-400 mt-2">Saving voyage log…</p>}
+          {saving && <p className="text-xs text-slate-500 mt-2">Saving…</p>}
         </div>
 
         {/* Words unlocked */}
-        <div className="w-full bg-blue-950/60 rounded-2xl border border-yellow-500/20 overflow-hidden shadow-lg shadow-yellow-900/10">
-          <div className="bg-gradient-to-r from-amber-600/80 to-yellow-700/80 px-4 py-3 flex items-center gap-2">
-            <span className="text-2xl">💰</span>
-            <div>
-              <p className="text-yellow-100 font-semibold text-sm">{heap.name}</p>
-              <p className="text-yellow-300/70 text-xs">5 words unlocked</p>
-            </div>
+        <div className="w-full bg-white/5 rounded-xl border border-emerald-500/20 overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/10 bg-emerald-500/[0.06]">
+            <p className="text-white font-medium text-sm">{heap.name}</p>
+            <p className="text-emerald-400/80 text-xs mt-0.5">5 words unlocked</p>
           </div>
           {heap.words.map((w) => (
-            <div key={w.en} className="flex items-center justify-between px-4 py-3 border-b border-blue-800/40 last:border-0">
-              <span className="text-blue-200 text-sm font-medium">{w.en}</span>
+            <div key={w.en} className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0">
+              <span className="text-slate-400 text-sm font-medium">{w.en}</span>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <div className="text-yellow-300 font-bold text-sm">{w.bg}</div>
-                  {w.cyr && <div className="text-blue-500 text-xs">{w.cyr}</div>}
+                  <div className="text-white font-semibold text-sm">{w.bg}</div>
+                  {w.cyr && <div className="text-slate-500 text-xs">{w.cyr}</div>}
                 </div>
                 <button
                   onClick={() => speak(w.bg, 'bg-BG')}
-                  className="text-base opacity-50 hover:opacity-90 transition-opacity leading-none"
+                  className="text-slate-500 hover:text-white transition-colors duration-200"
                   aria-label={`Speak ${w.bg}`}
                 >
-                  🔊
+                  <Volume2 size={16} />
                 </button>
               </div>
             </div>
@@ -335,22 +326,22 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
           {nextHeapId && (
             <button
               onClick={() => router.push(`/heap/${nextHeapId}`)}
-              className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-lg active:scale-95 transition-transform"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200"
             >
-              ⚔️ Next Island →
+              Next heap
             </button>
           )}
           <button
             onClick={() => router.push('/dictionary')}
-            className="w-full bg-blue-800 text-yellow-300 border border-yellow-500/25 rounded-2xl py-4 font-bold text-lg shadow-md active:scale-95 transition-transform"
+            className="w-full bg-white/10 hover:bg-white/[0.15] text-white border border-white/10 rounded-lg py-3.5 font-medium text-base transition-all duration-200"
           >
-            💰 View Treasure Chest
+            View vocabulary
           </button>
           <button
             onClick={() => router.push('/map')}
-            className="w-full bg-blue-950/80 text-blue-300 border border-blue-700/30 rounded-2xl py-3 font-semibold text-base active:scale-95 transition-transform"
+            className="w-full text-slate-400 hover:text-white rounded-lg py-3 font-medium text-sm transition-all duration-200"
           >
-            🗺️ Back to Map
+            Back to map
           </button>
         </div>
       </div>
@@ -364,71 +355,73 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
   const showWrong = showFeedback && !fb.isCorrect
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-[#060d1f] via-blue-950 to-blue-900 flex flex-col px-4 py-5 gap-4">
+    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col px-5 py-5 gap-4 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => router.push('/map')}
-          className="text-blue-400 text-sm py-2 pr-2 min-h-[44px] flex items-center"
+          className="flex items-center gap-1 text-slate-400 hover:text-white text-sm py-2 pr-2 min-h-[44px] transition-colors duration-200"
         >
-          ← Map
+          <ArrowLeft size={16} /> Map
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-blue-400 font-medium">
+          <span className="text-xs text-slate-500 font-medium">
             Loop {currentLoop}/2
           </span>
           <div className="flex gap-1">
             {heap.words.map((_, i) => (
               <div
                 key={i}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
                   i < consecutive
-                    ? 'bg-yellow-400 shadow-sm shadow-yellow-400/50'
+                    ? 'bg-emerald-400'
                     : i === wordIndex
-                    ? 'bg-blue-400'
-                    : 'bg-blue-800'
+                    ? 'bg-slate-400'
+                    : 'bg-white/10'
                 }`}
               />
             ))}
           </div>
         </div>
-        <span className="text-xs text-blue-500">{wordIndex + 1}/5</span>
+        <span className="text-xs text-slate-500">{wordIndex + 1}/5</span>
       </div>
 
-      {/* Prompt card — Captain's Log style */}
+      {/* Prompt card */}
       <div
-        className={`w-full rounded-2xl p-6 text-center transition-all border-2 ${
+        className={`w-full rounded-xl p-6 text-center transition-all duration-200 border ${
           showCorrect
-            ? 'bg-gradient-to-br from-green-900/40 to-emerald-900/40 border-green-400/60 shadow-lg shadow-green-900/30'
+            ? 'bg-emerald-500/10 border-emerald-500/40'
             : showWrong
-            ? 'bg-gradient-to-br from-red-900/40 to-rose-900/40 border-red-400/60 shadow-lg shadow-red-900/30'
-            : 'bg-gradient-to-br from-blue-900/60 to-blue-950/80 border-blue-700/40 shadow-lg shadow-blue-950/50'
+            ? 'bg-red-500/10 border-red-500/40'
+            : 'bg-white/5 border-white/10'
         }`}
       >
-        <p className="text-xs text-blue-400/70 uppercase tracking-widest mb-3">
-          {mode === 'en-bg' ? '🗺️ Translate to Bulgarian' : '⚓ Translate to English'}
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+          {mode === 'en-bg' ? 'Translate to Bulgarian' : 'Translate to English'}
         </p>
-        <p className="text-4xl font-bold text-white mb-1 leading-tight">{prompt}</p>
+        <p className="text-4xl font-semibold text-white mb-1 leading-tight">{prompt}</p>
         {mode === 'bg-en' && (
           <button
             onClick={() => speak(word.bg, 'bg-BG')}
-            className="text-2xl mt-2 opacity-50 hover:opacity-100 transition-opacity min-h-[44px] min-w-[44px] flex items-center justify-center mx-auto"
+            className="text-slate-400 hover:text-white transition-colors duration-200 mt-3 min-h-[44px] min-w-[44px] flex items-center justify-center mx-auto"
             aria-label="Listen"
           >
-            🔊
+            <Volume2 size={22} />
           </button>
         )}
 
         {showCorrect && (
-          <div className="mt-3 animate-sparkle">
-            <p className="text-green-300 font-bold text-xl">⚡ Correct!</p>
+          <div className="mt-3 flex items-center justify-center gap-1.5 text-emerald-400 font-medium animate-fade-in">
+            <Check size={18} strokeWidth={2.5} /> Correct
           </div>
         )}
         {showWrong && (
-          <div className="mt-3">
-            <p className="text-red-300 font-bold text-lg">✗ Not quite</p>
-            <p className="text-blue-300 text-sm mt-1.5">
-              Correct: <span className="font-bold text-yellow-300 text-base">{fb!.correctAnswer}</span>
+          <div className="mt-3 animate-fade-in">
+            <p className="flex items-center justify-center gap-1.5 text-red-400 font-medium">
+              <X size={18} strokeWidth={2.5} /> Not quite
+            </p>
+            <p className="text-slate-400 text-sm mt-1.5">
+              Correct: <span className="font-semibold text-white">{fb!.correctAnswer}</span>
             </p>
           </div>
         )}
@@ -445,7 +438,7 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
           placeholder={mode === 'en-bg' ? 'Type in Bulgarian (Cyrillic or hlyab)…' : 'Type in English…'}
           enterKeyHint="done"
           disabled={phase !== 'playing'}
-          className="w-full bg-blue-950/80 border-2 border-blue-700/50 text-white placeholder-blue-600 rounded-2xl px-4 py-4 text-lg focus:outline-none focus:border-yellow-500/50 disabled:opacity-40 min-h-[56px]"
+          className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-500 rounded-lg px-4 py-3.5 text-lg focus:outline-none focus:border-emerald-500/50 transition-all duration-200 disabled:opacity-40 min-h-[56px]"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
@@ -454,16 +447,16 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
         <button
           type="submit"
           disabled={!answer.trim() || phase !== 'playing'}
-          className="w-full bg-gradient-to-br from-amber-500 to-yellow-600 text-yellow-900 rounded-2xl py-4 font-bold text-lg shadow-md active:scale-95 transition-transform disabled:opacity-40 min-h-[56px]"
+          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg py-3.5 font-medium text-base transition-all duration-200 disabled:opacity-40 min-h-[56px]"
         >
-          ⚔️ Submit
+          Submit
         </button>
       </form>
 
       {/* Streak */}
       {consecutive > 0 && phase === 'playing' && (
-        <p className="text-center text-sm text-yellow-400 font-medium">
-          🔥 {consecutive}/5 on the right course!
+        <p className="text-center text-sm text-slate-400 font-medium">
+          {consecutive}/5 correct in a row
         </p>
       )}
     </div>
