@@ -109,13 +109,15 @@ export async function updateCachedProgress(
  * cache: a heap's 5 words enter the dictionary exactly when that heap is
  * completed, so the completed cached heaps ARE the dictionary. Lets Infinite
  * Mode run fully offline without a separate dictionary store. De-duped by word.
+ * Pass `mapId` to restrict to a single map's heaps (per-map Infinite Mode).
  */
-export async function getDictionaryWords(): Promise<HeapWord[]> {
+export async function getDictionaryWords(mapId?: number): Promise<HeapWord[]> {
   const heaps = await getAllCachedHeaps()
   const words: HeapWord[] = []
   const seen = new Set<string>()
   for (const ch of heaps) {
     if (!ch.progress?.completed) continue
+    if (mapId != null && ch.heap.map_id !== mapId) continue
     for (const w of ch.heap.words) {
       const key = `${w.en}|${w.bg}`
       if (seen.has(key)) continue

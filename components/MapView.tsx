@@ -2,7 +2,16 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Check, Lock, ChevronRight, Zap } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Check, Lock, ChevronRight, Zap, X } from 'lucide-react'
+
+type Direction = 'mixed' | 'en-bg' | 'bg-en'
+
+const DIRECTION_OPTIONS: { id: Direction; label: string; hint: string }[] = [
+  { id: 'mixed', label: 'Mixed', hint: 'Random EN ↔ BG each word' },
+  { id: 'en-bg', label: 'EN → BG', hint: 'See English, type Bulgarian' },
+  { id: 'bg-en', label: 'BG → EN', hint: 'See Bulgarian, type English' },
+]
 
 export interface HeapNode {
   id: string
@@ -84,7 +93,15 @@ const accentFor = (theme: string): Accent => {
 }
 
 export default function MapView({ maps, initialMapId }: { maps: MapData[]; initialMapId: number }) {
+  const router = useRouter()
   const [selectedId, setSelectedId] = useState(initialMapId)
+  const [voyageOpen, setVoyageOpen] = useState(false)
+  const [direction, setDirection] = useState<Direction>('mixed')
+
+  const startVoyage = () => {
+    setVoyageOpen(false)
+    router.push(`/infinite?map=${selectedId}&dir=${direction}`)
+  }
 
   // Empty state — DB not connected / not migrated
   if (maps.length === 0) {
@@ -115,8 +132,8 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   }
   const completedCount = selected.heaps.filter(h => h.completed).length
 
-  // Endless Voyage available once anything is completed anywhere
-  const anyCompleted = maps.some(m => m.heaps.some(h => h.completed))
+  // Infinite Mode is per-map: only offered once this map has unlocked words.
+  const canVoyage = completedCount > 0
 
   return (
     <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 pb-10 animate-fade-in">
@@ -151,22 +168,22 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
         </div>
       )}
 
-      {/* Endless Voyage */}
-      {anyCompleted && (
+      {/* Endless Voyage — per-map, opens the direction picker */}
+      {canVoyage && (
         <div className="px-5 pb-5">
-          <Link
-            href="/infinite"
-            className="flex items-center gap-3 w-full rounded-xl p-4 bg-white/5 hover:bg-white/[0.08] border border-white/10 transition-all duration-200 min-h-[60px]"
+          <button
+            onClick={() => setVoyageOpen(true)}
+            className="flex items-center gap-3 w-full rounded-xl p-4 bg-white/5 hover:bg-white/[0.08] border border-white/10 transition-all duration-200 min-h-[60px] text-left"
           >
-            <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-violet-500/15 text-violet-400 shrink-0">
+            <span className={`flex items-center justify-center w-10 h-10 rounded-lg shrink-0 ${a.badgeCurrent}`}>
               <Zap size={20} />
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">Infinite Mode</p>
-              <p className="text-xs text-slate-400 mt-0.5">Drill your words — chase your best streak</p>
+              <p className="text-sm font-semibold text-white">Endless Voyage</p>
+              <p className="text-xs text-slate-400 mt-0.5">Drill {selected.name}&apos;s words — chase your best streak</p>
             </div>
             <ChevronRight size={18} className="text-slate-500 shrink-0" />
-          </Link>
+          </button>
         </div>
       )}
 
@@ -266,6 +283,60 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
           </div>
         </div>
       </div>
+
+      {/* Direction picker — bottom sheet for the selected map's Endless Voyage */}
+      {voyageOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end animate-fade-in">
+          {/* Backdrop */}
+          <button
+            aria-label="Close"
+            onClick={() => setVoyageOpen(false)}
+            className="absolute inset-0 bg-black/60"
+          />
+          {/* Sheet */}
+          <div className="relative bg-slate-900 border-t border-white/10 rounded-t-2xl px-5 pt-5 pb-8 animate-slide-up">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <Zap size={18} className={a.text} />
+                <h2 className="text-lg font-semibold text-white">Endless Voyage</h2>
+              </div>
+              <button
+                onClick={() => setVoyageOpen(false)}
+                aria-label="Close"
+                className="flex items-center justify-center w-10 h-10 -mr-2 text-slate-400 hover:text-white transition-colors duration-200"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-sm text-slate-400 mb-4">{selected.name} · pick a direction</p>
+
+            <div className="flex flex-col gap-2.5 mb-6">
+              {DIRECTION_OPTIONS.map(opt => {
+                const active = direction === opt.id
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => setDirection(opt.id)}
+                    className={`w-full text-left rounded-xl p-3.5 border transition-all duration-200 min-h-[60px] ${
+                      active ? a.switchActive : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/[0.08]'
+                    }`}
+                  >
+                    <p className="text-sm font-semibold">{opt.label}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{opt.hint}</p>
+                  </button>
+                )
+              })}
+            </div>
+
+            <button
+              onClick={startVoyage}
+              className="w-full bg-violet-500 hover:bg-violet-600 text-white rounded-lg py-4 font-semibold text-base tracking-wide transition-all duration-200 min-h-[56px]"
+            >
+              START VOYAGE
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

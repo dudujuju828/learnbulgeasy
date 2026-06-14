@@ -6,8 +6,21 @@ import InfiniteMode from './InfiniteMode'
 import type { HeapWord } from '@/lib/types'
 
 type Status = 'loading' | 'ready' | 'empty'
+type Direction = 'mixed' | 'en-bg' | 'bg-en'
 
 const BEST_KEY = 'infinite_best_streak'
+
+// Parse the per-map run config from the URL the player launched from
+// (/infinite?map=2&dir=en-bg). Client-only so the page stays a static,
+// offline-cacheable shell. Defaults: map 1, mixed direction.
+function readRunConfig(): { mapId: number; direction: Direction } {
+  if (typeof window === 'undefined') return { mapId: 1, direction: 'mixed' }
+  const params = new URLSearchParams(window.location.search)
+  const mapId = Number(params.get('map')) || 1
+  const dir = params.get('dir')
+  const direction: Direction = dir === 'en-bg' || dir === 'bg-en' ? dir : 'mixed'
+  return { mapId, direction }
+}
 
 // Client-side loader for Infinite Mode. Reads the dictionary IndexedDB-first
 // (derived from completed cached heaps) with a network revalidate, mirroring
@@ -19,15 +32,17 @@ export default function InfiniteLoader() {
     try { return Number(localStorage.getItem(BEST_KEY)) || 0 } catch { return 0 }
   })
   const [status, setStatus] = useState<Status>('loading')
+  const [config] = useState(readRunConfig)
+  const { mapId, direction } = config
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
-      // 1) Instant: derive the dictionary from the offline heap cache.
+      // 1) Instant: derive this map's dictionary from the offline heap cache.
       try {
         const { getDictionaryWords } = await import('@/lib/idb')
-        const cached = await getDictionaryWords()
+        const cached = await getDictionaryWords(mapId)
         if (cached.length && !cancelled) {
           setWords(cached)
           setStatus('ready')
@@ -38,7 +53,7 @@ export default function InfiniteLoader() {
 
       // 2) Revalidate from the network (also recovers when there was no cache).
       try {
-        const res = await fetch('/api/infinite/start')
+        const res = await fetch(`/api/infinite/start?mapId=${mapId}&direction=${direction}`)
         if (!res.ok) throw new Error(`status ${res.status}`)
         const json = await res.json() as { words: HeapWord[]; best_streak: number }
         if (cancelled) return
@@ -60,10 +75,10 @@ export default function InfiniteLoader() {
 
     load()
     return () => { cancelled = true }
-  }, [])
+  }, [mapId, direction])
 
   if (status === 'ready' && words) {
-    return <InfiniteMode words={words} initialBest={best} />
+    return <InfiniteMode words={words} initialBest={best} direction={direction} />
   }
 
   if (status === 'empty') {

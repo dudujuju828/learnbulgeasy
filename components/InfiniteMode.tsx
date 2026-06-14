@@ -7,6 +7,7 @@ import type { HeapWord } from '@/lib/types'
 import { matchesAnswer, matchesEnAnswer } from '@/lib/vocab'
 
 type Mode = 'en-bg' | 'bg-en'
+type Direction = 'mixed' | 'en-bg' | 'bg-en'
 type Phase = 'playing' | 'correct' | 'wrong' | 'cycle-complete'
 
 const BEST_KEY = 'infinite_best_streak'
@@ -14,6 +15,7 @@ const BEST_KEY = 'infinite_best_streak'
 interface Props {
   words: HeapWord[]
   initialBest: number
+  direction?: Direction
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -27,6 +29,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 const randomMode = (): Mode => (Math.random() < 0.5 ? 'en-bg' : 'bg-en')
 
+// Resolve the next prompt mode: a fixed direction is honored verbatim; "mixed"
+// randomizes EN↔BG per word (the original behaviour).
+const modeFor = (direction: Direction): Mode =>
+  direction === 'mixed' ? randomMode() : direction
+
 function saveBestLocal(streak: number) {
   try {
     const stored = Number(localStorage.getItem(BEST_KEY)) || 0
@@ -34,12 +41,12 @@ function saveBestLocal(streak: number) {
   } catch { /* ignore */ }
 }
 
-export default function InfiniteMode({ words, initialBest }: Props) {
+export default function InfiniteMode({ words, initialBest, direction = 'mixed' }: Props) {
   const router = useRouter()
 
   const [deck, setDeck] = useState<HeapWord[]>(() => shuffle(words))
   const [pos, setPos] = useState(0)
-  const [mode, setMode] = useState<Mode>(() => randomMode())
+  const [mode, setMode] = useState<Mode>(() => modeFor(direction))
   const [answer, setAnswer] = useState('')
   const [phase, setPhase] = useState<Phase>('playing')
 
@@ -113,12 +120,12 @@ export default function InfiniteMode({ words, initialBest }: Props) {
         setPhase('cycle-complete')
       } else {
         setPos(nextPos)
-        setMode(randomMode())
+        setMode(modeFor(direction))
         setPhase('playing')
       }
     }, 650)
     return () => clearTimeout(timer)
-  }, [phase, persistResult])
+  }, [phase, persistResult, direction])
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -165,20 +172,20 @@ export default function InfiniteMode({ words, initialBest }: Props) {
       setPhase('cycle-complete')
     } else {
       setPos(nextPos)
-      setMode(randomMode())
+      setMode(modeFor(direction))
       setAnswer('')
       setPhase('playing')
     }
-  }, [pos, deck.length])
+  }, [pos, deck.length, direction])
 
   // Reshuffle the whole dictionary and sail on — streak & stats carry over.
   const restart = useCallback(() => {
     setDeck(shuffle(words))
     setPos(0)
-    setMode(randomMode())
+    setMode(modeFor(direction))
     setAnswer('')
     setPhase('playing')
-  }, [words])
+  }, [words, direction])
 
   const quit = useCallback(() => {
     const s = statsRef.current
