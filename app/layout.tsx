@@ -33,7 +33,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable} ${pirataOne.variable} h-full antialiased`}>
-      <body className="h-full bg-blue-50">{children}</body>
+      <body className="h-full bg-[#060d1f]">{children}</body>
     </html>
   );
 }
