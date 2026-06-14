@@ -23,6 +23,21 @@ export function usePWA() {
   return useContext(PWAContext)
 }
 
+// Pull every heap + vocab and store it in IndexedDB so all heaps are playable
+// offline, even ones the user has never opened. Safe to call repeatedly.
+export async function seedOfflineHeaps() {
+  try {
+    const res = await fetch('/api/heaps/offline')
+    if (!res.ok) return // 401 when logged out, etc. — nothing to seed
+    const json = await res.json() as { heaps: import('@/lib/idb').CachedHeap[] }
+    if (!json.heaps?.length) return
+    const { seedHeaps } = await import('@/lib/idb')
+    await seedHeaps(json.heaps)
+  } catch (err) {
+    console.warn('[pwa] offline seed failed (offline?)', err)
+  }
+}
+
 async function syncPendingProgress() {
   try {
     const { getPendingSync, removePendingSyncItem } = await import('@/lib/idb')
@@ -72,7 +87,10 @@ export default function PWAProvider({ children }: { children: React.ReactNode })
 
     const handleOnline = () => {
       setIsOnline(true)
-      if (wasOffline.current) syncPendingProgress()
+      if (wasOffline.current) {
+        syncPendingProgress()
+        seedOfflineHeaps()
+      }
       wasOffline.current = false
     }
 

@@ -42,5 +42,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Exclude Next internals AND PWA assets (service worker, manifest, offline
+  // page, icons) so they're publicly served and never redirected to /login —
+  // otherwise SW registration and offline caching break when the cookie is absent.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|sw\\.js|manifest\\.json|offline\\.html|icon-).*)'],
 }

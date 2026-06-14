@@ -89,13 +89,16 @@ export default function HeapGame({ heap, progress, nextHeapId }: Props) {
         body: JSON.stringify(data),
       })
       if (!res.ok) throw new Error('Server error')
-    } catch {
-      // Offline or error — queue for sync when back online
+    } catch (err) {
+      // Offline or error — queue for sync when back online, and keep the
+      // offline heap cache consistent so replays reflect local progress.
+      console.warn('[heap] progress save failed, queuing for sync', err)
       try {
-        const { queueProgressSync } = await import('@/lib/idb')
+        const { queueProgressSync, updateCachedProgress } = await import('@/lib/idb')
         await queueProgressSync(heap.id, data)
-      } catch {
-        // IDB unavailable — progress lost for this session
+        await updateCachedProgress(heap.id, data)
+      } catch (idbErr) {
+        console.error('[heap] IDB unavailable — progress lost this session', idbErr)
       }
     } finally {
       setSaving(false)

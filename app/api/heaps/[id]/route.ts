@@ -45,10 +45,16 @@ export async function GET(
       unlocked = prev[0]?.completed === true
     }
 
+    const nextHeaps = await sql`
+      SELECT id FROM heaps WHERE "order" = ${heap.order + 1}
+    ` as { id: string }[]
+    const nextHeapId = nextHeaps[0]?.id ?? null
+
     return NextResponse.json({
       heap,
       progress: progress[0] ?? null,
       unlocked,
+      nextHeapId,
     })
   } catch (err) {
     console.error('GET /api/heaps/[id] error:', err)

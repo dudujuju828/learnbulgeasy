@@ -1,21 +1,110 @@
 // Browser-only: import only from 'use client' components or lazy imports
+import type { Heap, UserProgress } from './types'
 
 const DB_NAME = 'bulgeasy-pwa'
-const DB_VERSION = 1
+const DB_VERSION = 2
+const SYNC_STORE = 'pending_sync'
+const HEAPS_STORE = 'heaps'
 
 function getDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
     req.onupgradeneeded = e => {
       const db = (e.target as IDBOpenDBRequest).result
-      if (!db.objectStoreNames.contains('pending_sync')) {
-        db.createObjectStore('pending_sync', { keyPath: 'heap_id' })
+      if (!db.objectStoreNames.contains(SYNC_STORE)) {
+        db.createObjectStore(SYNC_STORE, { keyPath: 'heap_id' })
+      }
+      if (!db.objectStoreNames.contains(HEAPS_STORE)) {
+        db.createObjectStore(HEAPS_STORE, { keyPath: 'id' })
       }
     }
     req.onsuccess = e => resolve((e.target as IDBOpenDBRequest).result)
+    req.onerror = () => {
+      console.error('[idb] open failed', req.error)
+      reject(req.error)
+    }
+  })
+}
+
+// ── Offline heap data cache ─────────────────────────────────────────────────
+
+export interface CachedHeap {
+  id: string
+  heap: Heap
+  progress: UserProgress | null
+  nextHeapId: string | null
+  unlocked: boolean
+  cachedAt: number
+}
+
+/** Bulk-store all heaps (full vocab) for offline play. */
+export async function seedHeaps(entries: CachedHeap[]): Promise<void> {
+  const db = await getDB()
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(HEAPS_STORE, 'readwrite')
+    const store = tx.objectStore(HEAPS_STORE)
+    for (const entry of entries) store.put(entry)
+    tx.oncomplete = () => {
+      console.log(`[idb] seeded ${entries.length} heaps for offline`)
+      resolve()
+    }
+    tx.onerror = () => {
+      console.error('[idb] seedHeaps failed', tx.error)
+      reject(tx.error)
+    }
+  })
+}
+
+export async function getCachedHeap(heapId: string): Promise<CachedHeap | null> {
+  const db = await getDB()
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(HEAPS_STORE, 'readonly').objectStore(HEAPS_STORE).get(heapId)
+    req.onsuccess = () => resolve((req.result as CachedHeap) ?? null)
+    req.onerror = () => {
+      console.error('[idb] getCachedHeap failed', req.error)
+      reject(req.error)
+    }
+  })
+}
+
+export async function getAllCachedHeaps(): Promise<CachedHeap[]> {
+  const db = await getDB()
+  return new Promise((resolve, reject) => {
+    const req = db.transaction(HEAPS_STORE, 'readonly').objectStore(HEAPS_STORE).getAll()
+    req.onsuccess = () => resolve(req.result as CachedHeap[])
     req.onerror = () => reject(req.error)
   })
 }
+
+/** Merge fresh progress into a cached heap so offline replays stay consistent. */
+export async function updateCachedProgress(
+  heapId: string,
+  data: PendingSync['data'],
+): Promise<void> {
+  const existing = await getCachedHeap(heapId)
+  if (!existing) return
+  const prev = existing.progress
+  existing.progress = {
+    id: prev?.id ?? '',
+    user_id: prev?.user_id ?? '',
+    heap_id: heapId,
+    completed: data.completed || prev?.completed || false,
+    loops_completed: Math.max(data.loops_completed, prev?.loops_completed ?? 0),
+    last_played: new Date().toISOString(),
+    total_attempts: (prev?.total_attempts ?? 0) + data.total_attempts,
+    best_streak: Math.max(data.best_streak, prev?.best_streak ?? 0),
+    created_at: prev?.created_at ?? new Date().toISOString(),
+  }
+  const db = await getDB()
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(HEAPS_STORE, 'readwrite')
+    tx.objectStore(HEAPS_STORE).put(existing)
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
+  })
+}
+
+// ── Pending progress sync queue ─────────────────────────────────────────────
 
 export interface PendingSync {
   heap_id: string
@@ -30,17 +119,23 @@ export interface PendingSync {
 export async function queueProgressSync(heapId: string, data: PendingSync['data']): Promise<void> {
   const db = await getDB()
   return new Promise((resolve, reject) => {
-    const tx = db.transaction('pending_sync', 'readwrite')
-    tx.objectStore('pending_sync').put({ heap_id: heapId, data })
-    tx.oncomplete = () => resolve()
-    tx.onerror = () => reject(tx.error)
+    const tx = db.transaction(SYNC_STORE, 'readwrite')
+    tx.objectStore(SYNC_STORE).put({ heap_id: heapId, data })
+    tx.oncomplete = () => {
+      console.log(`[idb] queued progress for ${heapId}`)
+      resolve()
+    }
+    tx.onerror = () => {
+      console.error('[idb] queueProgressSync failed', tx.error)
+      reject(tx.error)
+    }
   })
 }
 
 export async function getPendingSync(): Promise<PendingSync[]> {
   const db = await getDB()
   return new Promise((resolve, reject) => {
-    const req = db.transaction('pending_sync', 'readonly').objectStore('pending_sync').getAll()
+    const req = db.transaction(SYNC_STORE, 'readonly').objectStore(SYNC_STORE).getAll()
     req.onsuccess = () => resolve(req.result as PendingSync[])
     req.onerror = () => reject(req.error)
   })
@@ -49,8 +144,8 @@ export async function getPendingSync(): Promise<PendingSync[]> {
 export async function removePendingSyncItem(heapId: string): Promise<void> {
   const db = await getDB()
   return new Promise((resolve, reject) => {
-    const tx = db.transaction('pending_sync', 'readwrite')
-    tx.objectStore('pending_sync').delete(heapId)
+    const tx = db.transaction(SYNC_STORE, 'readwrite')
+    tx.objectStore(SYNC_STORE).delete(heapId)
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
   })
