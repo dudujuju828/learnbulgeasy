@@ -52,8 +52,8 @@ export default async function MapPage() {
         ? mapRows
         : [...new Set(heaps.map(h => h.map_id))].sort((a, b) => a - b).map((id, i) => ({
             id,
-            name: id === 1 ? 'Beginners Bay' : `Map ${id}`,
-            theme: id === 1 ? 'pirate' : 'straits',
+            name: id === 1 ? 'Beginners Bay' : id === 2 ? "Pirate's Passage" : id === 3 ? 'The Summit' : `Map ${id}`,
+            theme: id === 1 ? 'pirate' : id === 2 ? 'straits' : id === 3 ? 'volcano' : 'straits',
             order_index: i + 1,
             description: null,
             created_at: '',

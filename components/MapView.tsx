@@ -37,7 +37,7 @@ interface Accent {
   bar: string
 }
 
-// Map 1 → emerald, Map 2 → violet. Subtle accents on a neutral slate canvas.
+// Map 1 → emerald, Map 2 → violet, Map 3 → orange. Subtle accents on a neutral slate canvas.
 const ACCENTS: Record<string, Accent> = {
   emerald: {
     text: 'text-emerald-400',
@@ -63,9 +63,25 @@ const ACCENTS: Record<string, Accent> = {
     switchActive: 'bg-violet-500/15 text-violet-400 border-violet-500/30',
     bar: 'bg-violet-400',
   },
+  orange: {
+    text: 'text-orange-400',
+    dot: 'bg-orange-400',
+    nodeComplete: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+    nodeCurrent: 'bg-orange-500 text-white border-orange-400 ring-4 ring-orange-500/15',
+    cardComplete: 'bg-orange-500/[0.07] border-orange-500/20',
+    cardCurrent: 'bg-white/[0.07] border-orange-500/30',
+    badgeComplete: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+    badgeCurrent: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+    switchActive: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+    bar: 'bg-orange-400',
+  },
 }
 
-const accentFor = (theme: string): Accent => (theme === 'straits' ? ACCENTS.violet : ACCENTS.emerald)
+const accentFor = (theme: string): Accent => {
+  if (theme === 'straits') return ACCENTS.violet
+  if (theme === 'volcano') return ACCENTS.orange
+  return ACCENTS.emerald
+}
 
 export default function MapView({ maps, initialMapId }: { maps: MapData[]; initialMapId: number }) {
   const [selectedId, setSelectedId] = useState(initialMapId)

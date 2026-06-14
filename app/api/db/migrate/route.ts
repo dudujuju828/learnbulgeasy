@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
     await sql`
       INSERT INTO maps (id, name, theme, order_index, description) VALUES
         (1, 'Beginners Bay', 'pirate', 1, 'Set sail through the basics of Bulgarian'),
-        (2, 'Pirate''s Passage', 'straits', 2, 'Navigate the misty straits and trade routes')
+        (2, 'Pirate''s Passage', 'straits', 2, 'Navigate the misty straits and trade routes'),
+        (3, 'The Summit', 'volcano', 3, 'Climb the volcanic island to fluency')
       ON CONFLICT (id) DO NOTHING
     `
 
