@@ -56,10 +56,25 @@ export async function POST(request: NextRequest) {
       )
     `
 
+    // Infinite Mode: personal best streak lives on the user row
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS infinite_best_streak INTEGER`
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS infinite_attempts (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        streak INTEGER NOT NULL,
+        words_seen INTEGER NOT NULL,
+        accuracy INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `
+
     await sql`CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON user_progress(user_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_user_progress_heap_id ON user_progress(heap_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_dictionary_user_id ON dictionary(user_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_heaps_order ON heaps("order")`
+    await sql`CREATE INDEX IF NOT EXISTS idx_infinite_attempts_user_id ON infinite_attempts(user_id)`
 
     return NextResponse.json({ success: true, message: 'Migration completed' })
   } catch (err) {

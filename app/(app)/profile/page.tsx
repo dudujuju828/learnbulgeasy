@@ -8,6 +8,7 @@ export default async function ProfilePage() {
   let totalAttempts = 0
   let bestStreak = 0
   let wordsLearned = 0
+  let infiniteBest = 0
 
   try {
     const session = await getSession()
@@ -32,6 +33,17 @@ export default async function ProfilePage() {
         FROM dictionary WHERE user_id = ${session.userId}
       ` as { count: number }[]
       wordsLearned = Number(wordRows[0]?.count ?? 0)
+
+      // Tolerate the column not existing yet (pre-migration) so the rest of the
+      // stats still render.
+      try {
+        const infRows = await sql`
+          SELECT infinite_best_streak FROM users WHERE id = ${session.userId}
+        ` as { infinite_best_streak: number | null }[]
+        infiniteBest = Number(infRows[0]?.infinite_best_streak ?? 0)
+      } catch {
+        infiniteBest = 0
+      }
     }
   } catch {
     // DB not configured
@@ -78,6 +90,17 @@ export default async function ProfilePage() {
             ⚔️ {totalAttempts} battles fought
           </p>
         )}
+      </div>
+
+      {/* Endless Voyage personal best */}
+      <div className="w-full bg-gradient-to-br from-purple-900/40 to-indigo-900/40 rounded-2xl border border-purple-500/30 p-4 flex items-center gap-4">
+        <span className="text-4xl shrink-0">⚡</span>
+        <div className="flex-1">
+          <p className="text-xs text-purple-300/70 uppercase tracking-wider font-semibold">Endless Voyage</p>
+          <p className="text-2xl font-bold text-yellow-300 leading-tight">
+            {infiniteBest} <span className="text-sm font-normal text-indigo-300">best streak</span>
+          </p>
+        </div>
       </div>
 
       {heapsCompleted === 0 && (

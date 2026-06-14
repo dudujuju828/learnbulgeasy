@@ -1,5 +1,5 @@
 // Browser-only: import only from 'use client' components or lazy imports
-import type { Heap, UserProgress } from './types'
+import type { Heap, HeapWord, UserProgress } from './types'
 
 const DB_NAME = 'bulgeasy-pwa'
 const DB_VERSION = 2
@@ -102,6 +102,28 @@ export async function updateCachedProgress(
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
   })
+}
+
+/**
+ * Derive the player's unlocked dictionary words straight from the offline heap
+ * cache: a heap's 5 words enter the dictionary exactly when that heap is
+ * completed, so the completed cached heaps ARE the dictionary. Lets Infinite
+ * Mode run fully offline without a separate dictionary store. De-duped by word.
+ */
+export async function getDictionaryWords(): Promise<HeapWord[]> {
+  const heaps = await getAllCachedHeaps()
+  const words: HeapWord[] = []
+  const seen = new Set<string>()
+  for (const ch of heaps) {
+    if (!ch.progress?.completed) continue
+    for (const w of ch.heap.words) {
+      const key = `${w.en}|${w.bg}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      words.push(w)
+    }
+  }
+  return words
 }
 
 // ── Pending progress sync queue ─────────────────────────────────────────────

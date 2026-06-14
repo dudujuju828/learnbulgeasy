@@ -173,6 +173,20 @@
   100% { background-color: rgb(240, 253, 244); }
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes streak-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
 /* will-change pre-promotes elements to GPU compositor layers before animation starts */
 .animate-wave { animation: wave-scroll 8s linear infinite; will-change: transform; }
 .animate-float { animation: float 3s ease-in-out infinite; will-change: transform; }
@@ -180,6 +194,8 @@
 .animate-current-pulse { animation: current-pulse 1.8s ease-out infinite; will-change: transform, opacity; }
 .animate-sparkle { animation: sparkle-in 0.4s ease-out forwards; will-change: transform, opacity; }
 .animate-correct-flash { animation: correct-flash 0.6s ease-out; }
+.animate-shake { animation: shake 0.5s ease-in-out; will-change: transform; }
+.animate-streak-pop { animation: streak-pop 0.45s ease-out; will-change: transform; }
 
 /* Disable non-essential animations for battery saver / accessibility */
 @media (prefers-reduced-motion: reduce) {
@@ -197,6 +213,10 @@
     will-change: auto;
   }
   .animate-correct-flash {
+    animation: none;
+  }
+  .animate-shake,
+  .animate-streak-pop {
     animation: none;
   }
   .animate-bounce {

@@ -80,6 +80,23 @@ export default async function MapPage() {
         )}
       </div>
 
+      {/* Endless Voyage — drill unlocked dictionary words for a high streak */}
+      {completedCount > 0 && (
+        <div className="relative px-4 pb-1">
+          <Link
+            href="/infinite"
+            className="flex items-center gap-3 w-full rounded-2xl p-3.5 bg-gradient-to-br from-purple-700 to-indigo-800 border border-purple-400/30 shadow-lg shadow-indigo-950/50 active:scale-95 transition-transform min-h-[60px]"
+          >
+            <span className="text-3xl shrink-0 animate-float">⚡</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-pirata text-xl text-yellow-300 tracking-wide leading-tight">Endless Voyage</p>
+              <p className="text-xs text-indigo-200/80 mt-0.5">Drill your treasure words — chase your best streak</p>
+            </div>
+            <span className="text-yellow-400 text-lg shrink-0">›</span>
+          </Link>
+        </div>
+      )}
+
       {/* Animated ocean waves */}
       <div className="overflow-hidden h-6 mb-4 select-none">
         <div className="text-blue-400/30 text-2xl whitespace-nowrap animate-wave">
