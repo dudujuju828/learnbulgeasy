@@ -53,7 +53,8 @@ export async function POST(request: NextRequest) {
         (6, 'Frozen Tundra', 'ice', 6, 'Trek the polar ice to reach safe harbour'),
         (7, 'Enchanted Forest', 'forest', 7, 'Wander the magic woods and break the spell'),
         (8, 'Crystal Caverns', 'crystal', 8, 'Descend the glittering caves to the mother lode'),
-        (9, 'Celestial Skies', 'sky', 9, 'Ride the winds above the clouds to the constellation gate')
+        (9, 'Celestial Skies', 'sky', 9, 'Ride the winds above the clouds to the constellation gate'),
+        (10, 'The Murky Swamp', 'swamp', 10, 'Venture into the murky depths of the Bulgarian marshlands')
       ON CONFLICT (id) DO NOTHING
     `
 
