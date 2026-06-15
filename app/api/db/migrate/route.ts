@@ -58,6 +58,20 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (id) DO NOTHING
     `
 
+    // Insert "Essential Bulgarian" as the 2nd map. Map ids are fixed PKs; display
+    // order is driven by order_index. Slide existing maps 2-10 down one slot, then
+    // drop Essential Bulgarian into the freed order_index=2. Guarded so re-running
+    // migrate is a no-op (the shift only fires while map 2 still sits at slot 2).
+    await sql`
+      UPDATE maps SET order_index = order_index + 1
+      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 2) = 2
+    `
+    await sql`
+      INSERT INTO maps (id, name, theme, order_index, description) VALUES
+        (11, 'Essential Bulgarian', 'essential', 2, 'Everyday words you will actually use')
+      ON CONFLICT (id) DO NOTHING
+    `
+
     // Tie heaps to a map (existing heaps default to Map 1 = Beginners Bay)
     await sql`ALTER TABLE heaps ADD COLUMN IF NOT EXISTS map_id INTEGER DEFAULT 1`
     await sql`UPDATE heaps SET map_id = 1 WHERE map_id IS NULL`
@@ -67,6 +81,15 @@ export async function POST(request: NextRequest) {
           ALTER TABLE heaps ADD CONSTRAINT heaps_map_id_fkey FOREIGN KEY (map_id) REFERENCES maps(id);
         END IF;
       END $$;
+    `
+
+    // Make room for Essential Bulgarian's heaps (orders 26-50) by sliding every
+    // heap on maps 2-10 up by 25. Guarded on map 2's first heap still sitting at
+    // order 26, so a second migrate run leaves the already-shifted orders alone.
+    await sql`
+      UPDATE heaps SET "order" = "order" + 25
+      WHERE map_id IN (2, 3, 4, 5, 6, 7, 8, 9, 10)
+        AND (SELECT MIN("order") FROM heaps WHERE map_id = 2) = 26
     `
 
     await sql`
