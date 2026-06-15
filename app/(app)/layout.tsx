@@ -6,9 +6,9 @@ import OfflineSeeder from '@/components/OfflineSeeder'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-dvh overflow-hidden">
       <OfflineSeeder />
-      <header className="flex items-center justify-between px-4 py-3 bg-slate-900/70 backdrop-blur-md text-white sticky top-0 z-50 border-b border-white/10">
+      <header className="shrink-0 flex items-center justify-between px-4 py-3 bg-slate-900/70 backdrop-blur-md text-white z-50 border-b border-white/10">
         <Link href="/map" className="flex items-center gap-2">
           <span className="text-base font-semibold tracking-tight text-white">
             Learn<span className="text-emerald-400">BulgEasy</span>
@@ -19,7 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <LogoutButton />
         </div>
       </header>
-      <main className="flex-1 overflow-y-auto scroll-smooth">
+      <main className="flex-1 min-h-0 overflow-y-auto scroll-smooth">
         {children}
       </main>
       <NavBar />

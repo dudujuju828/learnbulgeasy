@@ -14,7 +14,7 @@ export default function NavBar() {
   const path = usePathname()
 
   return (
-    <nav className="flex border-t border-white/10 bg-slate-900/70 backdrop-blur-md sticky bottom-0 z-50 pb-safe">
+    <nav className="shrink-0 flex border-t border-white/10 bg-slate-900/70 backdrop-blur-md z-50 pb-safe">
       {TABS.map(tab => {
         const active = path === tab.href || (tab.href !== '/map' && path.startsWith(tab.href))
         const Icon = tab.icon

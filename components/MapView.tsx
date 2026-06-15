@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Check, Lock, ChevronRight, Zap, X } from 'lucide-react'
@@ -175,6 +175,22 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   const [selectedId, setSelectedId] = useState(initialMapId)
   const [voyageOpen, setVoyageOpen] = useState(false)
   const [direction, setDirection] = useState<Direction>('mixed')
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Restore the saved scroll position for the selected map (e.g. after playing a
+  // heap and navigating back), and keep saving it as the user scrolls. Keyed by
+  // map id so each map remembers its own spot. sessionStorage survives navigation
+  // but resets on a fresh load, which is the behaviour we want.
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const key = `map-scroll-${selectedId}`
+    const saved = sessionStorage.getItem(key)
+    el.scrollTop = saved ? parseInt(saved, 10) || 0 : 0
+    const onScroll = () => sessionStorage.setItem(key, String(el.scrollTop))
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [selectedId])
 
   const startVoyage = () => {
     setVoyageOpen(false)
@@ -184,7 +200,7 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   // Empty state — DB not connected / not migrated
   if (maps.length === 0) {
     return (
-      <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 px-5 pt-12">
+      <div className="h-full overflow-y-auto bg-gradient-to-b from-slate-900 to-slate-800 px-5 pt-12">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-semibold text-white tracking-tight">Map</h1>
           <p className="text-slate-400 text-sm mt-1">Your learning path</p>
@@ -214,7 +230,7 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
   const canVoyage = completedCount > 0
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-slate-900 to-slate-800 pb-10 animate-fade-in">
+    <div ref={scrollRef} className="h-full overflow-y-auto bg-gradient-to-b from-slate-900 to-slate-800 pb-10 animate-fade-in">
       {/* Header */}
       <div className="px-5 pt-10 pb-4">
         <h1 className="text-2xl font-semibold text-white tracking-tight">{selected.name}</h1>
@@ -226,7 +242,7 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
       {/* Map switcher */}
       {maps.length > 1 && (
         <div className="px-5 pb-4">
-          <div className="flex gap-1.5 p-1 rounded-lg bg-white/5 border border-white/10">
+          <div className="flex gap-1.5 p-1 rounded-lg bg-white/5 border border-white/10 overflow-x-auto">
             {maps.map(m => {
               const active = m.id === selected.id
               const ma = accentFor(m.theme)
@@ -234,7 +250,7 @@ export default function MapView({ maps, initialMapId }: { maps: MapData[]; initi
                 <button
                   key={m.id}
                   onClick={() => setSelectedId(m.id)}
-                  className={`flex-1 py-2 px-3 rounded-md text-sm font-medium border transition-all duration-200 min-h-[40px] ${
+                  className={`shrink-0 whitespace-nowrap py-2 px-3 rounded-md text-sm font-medium border transition-all duration-200 min-h-[40px] ${
                     active ? ma.switchActive : 'text-slate-400 border-transparent hover:text-slate-200'
                   }`}
                 >
