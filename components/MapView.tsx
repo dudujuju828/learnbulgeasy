@@ -84,11 +84,76 @@ const ACCENTS: Record<string, Accent> = {
     switchActive: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
     bar: 'bg-orange-400',
   },
+  amber: {
+    text: 'text-amber-400',
+    dot: 'bg-amber-400',
+    nodeComplete: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    nodeCurrent: 'bg-amber-500 text-white border-amber-400 ring-4 ring-amber-500/15',
+    cardComplete: 'bg-amber-500/[0.07] border-amber-500/20',
+    cardCurrent: 'bg-white/[0.07] border-amber-500/30',
+    badgeComplete: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    badgeCurrent: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    switchActive: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    bar: 'bg-amber-400',
+  },
+  rose: {
+    text: 'text-rose-400',
+    dot: 'bg-rose-400',
+    nodeComplete: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+    nodeCurrent: 'bg-rose-500 text-white border-rose-400 ring-4 ring-rose-500/15',
+    cardComplete: 'bg-rose-500/[0.07] border-rose-500/20',
+    cardCurrent: 'bg-white/[0.07] border-rose-500/30',
+    badgeComplete: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+    badgeCurrent: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+    switchActive: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+    bar: 'bg-rose-400',
+  },
+  cyan: {
+    text: 'text-cyan-400',
+    dot: 'bg-cyan-400',
+    nodeComplete: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+    nodeCurrent: 'bg-cyan-500 text-white border-cyan-400 ring-4 ring-cyan-500/15',
+    cardComplete: 'bg-cyan-500/[0.07] border-cyan-500/20',
+    cardCurrent: 'bg-white/[0.07] border-cyan-500/30',
+    badgeComplete: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+    badgeCurrent: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+    switchActive: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+    bar: 'bg-cyan-400',
+  },
+  lime: {
+    text: 'text-lime-400',
+    dot: 'bg-lime-400',
+    nodeComplete: 'bg-lime-500/20 text-lime-400 border-lime-500/30',
+    nodeCurrent: 'bg-lime-500 text-white border-lime-400 ring-4 ring-lime-500/15',
+    cardComplete: 'bg-lime-500/[0.07] border-lime-500/20',
+    cardCurrent: 'bg-white/[0.07] border-lime-500/30',
+    badgeComplete: 'text-lime-400 bg-lime-500/10 border-lime-500/20',
+    badgeCurrent: 'text-lime-400 bg-lime-500/10 border-lime-500/20',
+    switchActive: 'bg-lime-500/15 text-lime-400 border-lime-500/30',
+    bar: 'bg-lime-400',
+  },
+  fuchsia: {
+    text: 'text-fuchsia-400',
+    dot: 'bg-fuchsia-400',
+    nodeComplete: 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/30',
+    nodeCurrent: 'bg-fuchsia-500 text-white border-fuchsia-400 ring-4 ring-fuchsia-500/15',
+    cardComplete: 'bg-fuchsia-500/[0.07] border-fuchsia-500/20',
+    cardCurrent: 'bg-white/[0.07] border-fuchsia-500/30',
+    badgeComplete: 'text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20',
+    badgeCurrent: 'text-fuchsia-400 bg-fuchsia-500/10 border-fuchsia-500/20',
+    switchActive: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+    bar: 'bg-fuchsia-400',
+  },
 }
 
 const accentFor = (theme: string): Accent => {
   if (theme === 'straits') return ACCENTS.violet
   if (theme === 'volcano') return ACCENTS.orange
+  if (theme === 'mountain') return ACCENTS.amber
+  if (theme === 'desert') return ACCENTS.rose
+  if (theme === 'ice') return ACCENTS.cyan
+  if (theme === 'forest') return ACCENTS.lime
+  if (theme === 'crystal') return ACCENTS.fuchsia
   return ACCENTS.emerald
 }
 

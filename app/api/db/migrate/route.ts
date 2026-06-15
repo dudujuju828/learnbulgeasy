@@ -47,7 +47,12 @@ export async function POST(request: NextRequest) {
       INSERT INTO maps (id, name, theme, order_index, description) VALUES
         (1, 'Beginners Bay', 'pirate', 1, 'Set sail through the basics of Bulgarian'),
         (2, 'Pirate''s Passage', 'straits', 2, 'Navigate the misty straits and trade routes'),
-        (3, 'The Summit', 'volcano', 3, 'Climb the volcanic island to fluency')
+        (3, 'The Summit', 'volcano', 3, 'Climb the volcanic island to fluency'),
+        (4, 'Mountain Pass', 'mountain', 4, 'Trek the high ranges and snowy peaks'),
+        (5, 'Desert Oasis', 'desert', 5, 'Cross the burning sands to the green water'),
+        (6, 'Frozen Tundra', 'ice', 6, 'Trek the polar ice to reach safe harbour'),
+        (7, 'Enchanted Forest', 'forest', 7, 'Wander the magic woods and break the spell'),
+        (8, 'Crystal Caverns', 'crystal', 8, 'Descend the glittering caves to the mother lode')
       ON CONFLICT (id) DO NOTHING
     `
 
