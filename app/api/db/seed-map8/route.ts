@@ -341,7 +341,7 @@ export async function POST(request: NextRequest) {
     const sql = getDb()
 
     const existingOrders = await sql`
-      SELECT "order" FROM heaps WHERE "order" >= 176
+      SELECT "order" FROM heaps WHERE "order" >= 176 AND "order" <= 200
     ` as { order: number }[]
     const existingOrderSet = new Set(existingOrders.map(r => r.order))
 
