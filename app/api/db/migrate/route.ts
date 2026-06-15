@@ -58,23 +58,24 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (id) DO NOTHING
     `
 
-    // Insert "Essential Bulgarian" as the 2nd map. Map ids are fixed PKs; display
+    // Insert "Essential Bulgarian" as the 3rd map. Map ids are fixed PKs; display
     // order is driven by order_index. Slide existing maps 2-10 down one slot, then
-    // drop Essential Bulgarian into the freed order_index=2. Guarded so re-running
-    // migrate is a no-op (the shift only fires while map 2 still sits at slot 2).
+    // drop Essential Bulgarian into order_index=3 (Everyday Vocabulary takes slot 2).
+    // Guarded so re-running migrate is a no-op (the shift only fires while map 2
+    // still sits at slot 2).
     await sql`
       UPDATE maps SET order_index = order_index + 1
       WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 2) = 2
     `
     await sql`
       INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (11, 'Essential Bulgarian', 'essential', 2, 'Everyday words you will actually use')
+        (11, 'Essential Bulgarian', 'essential', 3, 'Everyday words you will actually use')
       ON CONFLICT (id) DO NOTHING
     `
 
-    // Insert \"Everyday Vocabulary\" (Map 12) as the 3rd map, slotting between
-    // Essential Bulgarian (order_index=2) and the themed maps (currently 3-11).
-    // Slide themed maps 2-10 down one slot, then insert Map 12 at order_index=3.
+    // Insert \"Everyday Vocabulary\" (Map 12) as the 2nd map, slotting between
+    // Beginners Bay (order_index=1) and Essential Bulgarian (order_index=3).
+    // Slide maps 2-10 down one slot, then insert Map 12 at order_index=2.
     // Guarded so a second migrate run is a no-op (the shift only fires while
     // map 2 still sits at slot 3).
     await sql`
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
     `
     await sql`
       INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (12, 'Everyday Vocabulary', 'essential', 3, 'More high-frequency words for daily life')
+        (12, 'Everyday Vocabulary', 'essential', 2, 'More high-frequency words for daily life')
       ON CONFLICT (id) DO NOTHING
     `
 
