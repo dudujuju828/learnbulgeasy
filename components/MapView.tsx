@@ -180,6 +180,18 @@ const ACCENTS: Record<string, Accent> = {
     switchActive: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
     bar: 'bg-indigo-400',
   },
+  pink: {
+    text: 'text-pink-400',
+    dot: 'bg-pink-400',
+    nodeComplete: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+    nodeCurrent: 'bg-pink-500 text-white border-pink-400 ring-4 ring-pink-500/15',
+    cardComplete: 'bg-pink-500/[0.07] border-pink-500/20',
+    cardCurrent: 'bg-white/[0.07] border-pink-500/30',
+    badgeComplete: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+    badgeCurrent: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+    switchActive: 'bg-pink-500/15 text-pink-400 border-pink-500/30',
+    bar: 'bg-pink-400',
+  },
 }
 
 const accentFor = (theme: string): Accent => {
@@ -193,6 +205,7 @@ const accentFor = (theme: string): Accent => {
   if (theme === 'sky') return ACCENTS.teal
   if (theme === 'swamp') return ACCENTS.indigo
   if (theme === 'essential') return ACCENTS.sky
+  if (theme === 'frequency-vocab') return ACCENTS.pink
   return ACCENTS.emerald
 }
 

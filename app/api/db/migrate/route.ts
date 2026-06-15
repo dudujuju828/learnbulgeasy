@@ -88,6 +88,20 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (id) DO NOTHING
     `
 
+    // Insert "Daily Bulgarian" (Map 13) as the 2nd map, slotting between Beginners
+    // Bay (order_index=1) and Everyday Vocabulary. Slide maps 2-12 down one slot,
+    // then insert Map 13 at order_index=2. Guarded so a second migrate run is a
+    // no-op (the shift only fires while Everyday Vocabulary still sits at slot 2).
+    await sql`
+      UPDATE maps SET order_index = order_index + 1
+      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 12) = 2
+    `
+    await sql`
+      INSERT INTO maps (id, name, theme, order_index, description) VALUES
+        (13, 'Daily Bulgarian', 'frequency-vocab', 2, 'Everyday speech: connectors, verbs and the words you use most')
+      ON CONFLICT (id) DO NOTHING
+    `
+
     // Tie heaps to a map (existing heaps default to Map 1 = Beginners Bay)
     await sql`ALTER TABLE heaps ADD COLUMN IF NOT EXISTS map_id INTEGER DEFAULT 1`
     await sql`UPDATE heaps SET map_id = 1 WHERE map_id IS NULL`
