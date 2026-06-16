@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 2 — "Pirate's Passage": heaps 26–50, a canal/trade-route voyage.
+// Map 2 — "Home & Work": heaps 26–50, practical themed vocab — home, work, health, shopping, school, hobbies, city and family.
 const MAP2_HEAPS = [
   {
     name: 'At Home: Furniture',

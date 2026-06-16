@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 4 — "Mountain Pass": heaps 76–100, the trek over the high ranges.
+// Map 4 — "Mountains & Outdoors": heaps 76–100, hiking, weather, wildlife and the great outdoors.
 const MAP4_HEAPS = [
   {
     name: 'Peaks: The Heights',

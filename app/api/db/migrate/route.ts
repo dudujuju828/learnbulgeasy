@@ -43,63 +43,35 @@ export async function POST(request: NextRequest) {
       )
     `
 
+    // Maps are ordered by learning importance: the most useful, high-frequency
+    // vocabulary first (basics, essentials, daily/modern life), then the broad
+    // practical themed maps (home/work, going out), then the niche scenic maps
+    // (mountains, desert, winter, forest, caves, sky, wetlands) last. display
+    // order is driven by order_index (see /api/maps, which sorts by it). Map ids
+    // are fixed PKs and never change; ON CONFLICT DO UPDATE re-applies the order
+    // and names on every run, so this is the single source of truth for map
+    // ordering — both for a fresh DB and for re-running migrate on production.
     await sql`
       INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (1, 'Beginners Bay', 'pirate', 1, 'Set sail through the basics of Bulgarian'),
-        (2, 'Pirate''s Passage', 'straits', 2, 'Navigate the misty straits and trade routes'),
-        (3, 'The Summit', 'volcano', 3, 'Climb the volcanic island to fluency'),
-        (4, 'Mountain Pass', 'mountain', 4, 'Trek the high ranges and snowy peaks'),
-        (5, 'Desert Oasis', 'desert', 5, 'Cross the burning sands to the green water'),
-        (6, 'Frozen Tundra', 'ice', 6, 'Trek the polar ice to reach safe harbour'),
-        (7, 'Enchanted Forest', 'forest', 7, 'Wander the magic woods and break the spell'),
-        (8, 'Crystal Caverns', 'crystal', 8, 'Descend the glittering caves to the mother lode'),
-        (9, 'Celestial Skies', 'sky', 9, 'Ride the winds above the clouds to the constellation gate'),
-        (10, 'The Murky Swamp', 'swamp', 10, 'Venture into the murky depths of the Bulgarian marshlands')
-      ON CONFLICT (id) DO NOTHING
-    `
-
-    // Insert "Essential Bulgarian" as the 3rd map. Map ids are fixed PKs; display
-    // order is driven by order_index. Slide existing maps 2-10 down one slot, then
-    // drop Essential Bulgarian into order_index=3 (Everyday Vocabulary takes slot 2).
-    // Guarded so re-running migrate is a no-op (the shift only fires while map 2
-    // still sits at slot 2).
-    await sql`
-      UPDATE maps SET order_index = order_index + 1
-      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 2) = 2
-    `
-    await sql`
-      INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (11, 'Essential Bulgarian', 'essential', 3, 'Everyday words you will actually use')
-      ON CONFLICT (id) DO NOTHING
-    `
-
-    // Insert \"Everyday Vocabulary\" (Map 12) as the 2nd map, slotting between
-    // Beginners Bay (order_index=1) and Essential Bulgarian (order_index=3).
-    // Slide maps 2-10 down one slot, then insert Map 12 at order_index=2.
-    // Guarded so a second migrate run is a no-op (the shift only fires while
-    // map 2 still sits at slot 3).
-    await sql`
-      UPDATE maps SET order_index = order_index + 1
-      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 2) = 3
-    `
-    await sql`
-      INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (12, 'Everyday Vocabulary', 'essential', 2, 'More high-frequency words for daily life')
-      ON CONFLICT (id) DO NOTHING
-    `
-
-    // Insert "Daily Bulgarian" (Map 13) as the 2nd map, slotting between Beginners
-    // Bay (order_index=1) and Everyday Vocabulary. Slide maps 2-12 down one slot,
-    // then insert Map 13 at order_index=2. Guarded so a second migrate run is a
-    // no-op (the shift only fires while Everyday Vocabulary still sits at slot 2).
-    await sql`
-      UPDATE maps SET order_index = order_index + 1
-      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 12) = 2
-    `
-    await sql`
-      INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (13, 'Daily Bulgarian', 'frequency-vocab', 2, 'Everyday speech: connectors, verbs and the words you use most')
-      ON CONFLICT (id) DO NOTHING
+        (1,  'Bulgarian Basics',     'pirate',          1,  'Greetings, numbers, family and food — your very first words'),
+        (11, 'Essential Bulgarian',  'essential',       2,  'Pronouns, core verbs and the words you need first'),
+        (12, 'Everyday Vocabulary',  'essential',       3,  'More high-frequency words for daily life'),
+        (13, 'Daily Bulgarian',      'frequency-vocab', 4,  'Everyday speech: connectors, verbs and the words you use most'),
+        (14, 'Modern Life',          'frequency-vocab', 5,  'Modern, practical vocabulary for everyday life in Bulgaria'),
+        (2,  'Home & Work',          'straits',         6,  'Home, work, shopping, school and getting around town'),
+        (3,  'Out & About',          'volcano',         7,  'Restaurants, travel, technology and going out'),
+        (4,  'Mountains & Outdoors', 'mountain',        8,  'Hiking, weather, wildlife and the great outdoors'),
+        (5,  'Desert & Travel',      'desert',          9,  'Desert crossings, survival and the long road'),
+        (6,  'Winter & Arctic',      'ice',             10, 'Cold, snow, winter gear and the frozen north'),
+        (7,  'Forest & Magic',       'forest',          11, 'Woods, creatures and a world of fantasy'),
+        (8,  'Caves & Gems',         'crystal',         12, 'Caverns, minerals and glittering gemstones'),
+        (9,  'Sky & Stars',          'sky',             13, 'Clouds, stars, flight and the open sky'),
+        (10, 'Wetlands & Wildlife',  'swamp',           14, 'Marsh animals, plants and the murky wetlands')
+      ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        theme = EXCLUDED.theme,
+        order_index = EXCLUDED.order_index,
+        description = EXCLUDED.description
     `
 
     // Tie heaps to a map (existing heaps default to Map 1 = Beginners Bay)
@@ -195,20 +167,6 @@ export async function POST(request: NextRequest) {
     await sql`CREATE INDEX IF NOT EXISTS idx_heaps_order ON heaps("order")`
     await sql`CREATE INDEX IF NOT EXISTS idx_heaps_map_id ON heaps(map_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_infinite_attempts_user_id ON infinite_attempts(user_id)`
-
-    // Insert "Modern Life" (Map 14) as the 2nd map, slotting between Beginners
-    // Bay (order_index=1) and Daily Bulgarian. Slide maps 2-13 down one slot,
-    // then insert Map 14 at order_index=2. Guarded so a second migrate run is a
-    // no-op (the shift only fires while Daily Bulgarian still sits at slot 2).
-    await sql`
-      UPDATE maps SET order_index = order_index + 1
-      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 13) = 2
-    `
-    await sql`
-      INSERT INTO maps (id, name, theme, order_index, description) VALUES
-        (14, 'Modern Life', 'frequency-vocab', 2, 'Modern, practical vocabulary for everyday life in Bulgaria')
-      ON CONFLICT (id) DO NOTHING
-    `
 
     return NextResponse.json({ success: true, message: 'Migration completed' })
   } catch (err) {

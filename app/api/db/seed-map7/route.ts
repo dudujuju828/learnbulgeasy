@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 7 — "Enchanted Forest": heaps 151–175, deep into the magic woods.
+// Map 7 — "Forest & Magic": heaps 151–175, woods, creatures and a world of fantasy.
 const MAP7_HEAPS = [
   {
     name: 'The Woods: Deep Green',

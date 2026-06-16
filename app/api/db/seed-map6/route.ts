@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 6 — "Frozen Tundra": heaps 126–150, the trek across the polar ice.
+// Map 6 — "Winter & Arctic": heaps 126–150, cold, snow, winter gear and the frozen north.
 const MAP6_HEAPS = [
   {
     name: 'Tundra: The Frozen Land',

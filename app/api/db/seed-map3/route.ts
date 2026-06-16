@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 3 — "The Summit": heaps 51–75, the climb up the volcanic island.
+// Map 3 — "Out & About": heaps 51–75, practical themed vocab — restaurants, travel, technology, leisure, business and going out.
 const MAP3_HEAPS = [
   {
     name: 'Restaurant: Ordering',

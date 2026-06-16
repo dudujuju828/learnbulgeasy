@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 9 — "Celestial Skies": heaps 201–225, riding the winds above the clouds.
+// Map 9 — "Sky & Stars": heaps 201–225, clouds, stars, flight and the open sky.
 const MAP9_HEAPS = [
   {
     name: 'Clouds: The White Fleeces',

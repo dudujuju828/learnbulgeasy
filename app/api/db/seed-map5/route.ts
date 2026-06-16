@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 5 — "Desert Oasis": heaps 101–125, the long crossing to the green water.
+// Map 5 — "Desert & Travel": heaps 101–125, desert crossings, survival and the long road.
 const MAP5_HEAPS = [
   {
     name: 'Sands: The Open Desert',

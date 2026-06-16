@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 10 — "The Murky Swamp": heaps 226–250, wading into the Bulgarian marshlands.
+// Map 10 — "Wetlands & Wildlife": heaps 226–250, marsh animals, plants and the murky wetlands.
 const MAP10_HEAPS = [
   {
     name: 'Bog Plants: The Green Mat',

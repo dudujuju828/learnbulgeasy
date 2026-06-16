@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/db'
 import { insertHeapsDeduped } from '@/lib/seed'
 
-// Map 8 — "Crystal Caverns": heaps 176–200, deep into the glittering underworld.
+// Map 8 — "Caves & Gems": heaps 176–200, caverns, minerals and glittering gemstones.
 const MAP8_HEAPS = [
   {
     name: 'Caverns: The Entrance',
