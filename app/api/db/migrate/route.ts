@@ -196,6 +196,20 @@ export async function POST(request: NextRequest) {
     await sql`CREATE INDEX IF NOT EXISTS idx_heaps_map_id ON heaps(map_id)`
     await sql`CREATE INDEX IF NOT EXISTS idx_infinite_attempts_user_id ON infinite_attempts(user_id)`
 
+    // Insert "Modern Life" (Map 14) as the 2nd map, slotting between Beginners
+    // Bay (order_index=1) and Daily Bulgarian. Slide maps 2-13 down one slot,
+    // then insert Map 14 at order_index=2. Guarded so a second migrate run is a
+    // no-op (the shift only fires while Daily Bulgarian still sits at slot 2).
+    await sql`
+      UPDATE maps SET order_index = order_index + 1
+      WHERE id >= 2 AND (SELECT order_index FROM maps WHERE id = 13) = 2
+    `
+    await sql`
+      INSERT INTO maps (id, name, theme, order_index, description) VALUES
+        (14, 'Modern Life', 'frequency-vocab', 2, 'Modern, practical vocabulary for everyday life in Bulgaria')
+      ON CONFLICT (id) DO NOTHING
+    `
+
     return NextResponse.json({ success: true, message: 'Migration completed' })
   } catch (err) {
     console.error('Migration error:', err)
